@@ -187,7 +187,7 @@ module.exports = {
   // webpack-dev-server 相关配置
   devServer: {
     /* 自动打开浏览器 */
-    open: false,
+    open: true,
     host: 'localhost',
     // host: "0.0.0.0", //局域网和本地访问
     // host: "192.168.1.11",
