@@ -3,7 +3,7 @@
     <div class="container">
       <div class="navigation">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <!-- <el-breadcrumb-item>信息登记</el-breadcrumb-item> -->
+          <el-breadcrumb-item>信息登记</el-breadcrumb-item>
           <el-breadcrumb-item>一般文件</el-breadcrumb-item>
           <el-breadcrumb-item>呈批件</el-breadcrumb-item>
         </el-breadcrumb>
@@ -14,13 +14,14 @@
           <div class="box-card_header_title">
             <span>呈批件登记</span>
           </div>
-          <el-row type="flex" class="row-bg" justify="space-around">
+          <el-row type="flex" justify="space-around">
             <el-col :span="5"> <el-button @click="LogBtn">日志</el-button><el-button>二维码打印</el-button> </el-col>
             <el-col :span="2">
               <el-button @click="ScanCodeToSign">扫码签收</el-button>
             </el-col>
           </el-row>
         </div>
+        <!-- 基本信息 -->
         <el-card class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>基本信息</span>
@@ -48,7 +49,7 @@
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="来文内容：" prop="name" resize="none" required>
+                <el-form-item label="来文内容：" prop="name" required>
                   <el-input v-model="ruleForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
@@ -107,65 +108,102 @@
             </el-row>
           </el-form>
         </el-card>
+        <!-- 送呈领导 -->
         <el-card v-if="$store.state.code == 1" class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>送呈领导</span>
           </div>
+
           <el-row>
             <el-col :span="4" style="text-align:center"><div style="padding:15px 0;">领导批示：</div></el-col>
-            <el-col :span="18"><el-button v-for="o in 12" :key="o" plain class="leadershipBtn">徐显辉</el-button></el-col>
+            <el-col :span="18"><el-button v-for="o in 12" :key="o" plain class="leadershipBtn" @click="addDomain">徐显辉</el-button></el-col>
           </el-row>
 
           <el-row type="flex" justify="center" style="margin-top:20px">
-            <el-col :span="20">
-              <el-card class="box-card">
-                <el-row>
-                  <el-col :span="18">
-                    <el-form ref="InstructionsForm" :model="InstructionsForm" label-width="90px" class="demo-dynamic">
+            <el-col :span="22">
+              <el-card v-for="(item, index) in InstructionBox" :key="index" class="box-card">
+                <el-row type="flex" justify="space-between" align="middle">
+                  <el-col :span="20">
+                    <el-form ref="InstructionsForm" :model="item.InstructionsForm" label-width="90px" class="demo-dynamic">
                       <el-row>
-                        <el-col :span="7">
+                        <el-col :span="8">
                           <el-form-item label="批示人：">
-                            <span>{{ InstructionsForm.name ? InstructionsForm.name : '徐显辉' }}</span>
+                            <span>{{ item.InstructionsForm.name ? item.InstructionsForm.name : '徐显辉' }}</span>
                           </el-form-item>
                         </el-col>
-                        <el-col :span="17">
+                        <el-col :span="16">
                           <el-form-item label="批示时间：">
-                            <el-date-picker v-model="InstructionsForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
+                            <el-date-picker v-model="item.InstructionsForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
                             <el-button style="margin-left:10px">圈阅</el-button>
                           </el-form-item>
                         </el-col>
                       </el-row>
                       <el-form-item label="批示内容：">
-                        <el-input v-model="InstructionsForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                        <el-input v-model="item.InstructionsForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                       </el-form-item>
                     </el-form>
                   </el-col>
-                  <el-col :span="4">
-                    <el-button type="danger">删 除</el-button>
+                  <el-col :span="3">
+                    <el-button type="danger" class="delete_btn_class" @click="delInstructions(index)">删 除</el-button>
                   </el-col>
                 </el-row>
               </el-card>
             </el-col>
           </el-row>
         </el-card>
+        <!-- 办结 -->
         <el-card v-if="$store.state.code == 1" class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>办结</span>
           </div>
+          <el-row type="flex" justify="center">
+            <el-form ref="FinishForm" :model="FinishForm" label-width="90px" class="demo-dynamic">
+              <el-col :span="18">
+                <el-form-item label="办结时间：">
+                  <el-date-picker v-model="FinishForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
+                  <el-button style="margin-left:30px" type="primary">办结</el-button>
+                </el-form-item>
+              </el-col>
+              <el-col :span="18">
+                <el-form-item label="备注：">
+                  <el-input v-model="FinishForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                </el-form-item>
+              </el-col>
+            </el-form>
+          </el-row>
         </el-card>
+        <!-- 附件 -->
         <el-card v-if="$store.state.code == 1" class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>附件</span>
           </div>
+          <el-row type="flex" justify="center">
+            <el-col :span="18">
+              <el-row type="flex" justify="center">
+                <el-col :span="2">
+                  <span>附件：</span>
+                </el-col>
+                <el-col :span="10">
+                  <el-upload action="" :on-remove="handleRemove" :on-exceed="handleExceed" :before-remove="beforeRemove" :multiple="false" :limit="1" :file-list="fileList" :auto-upload="false">
+                    <el-link type="danger">添加附件</el-link>
+                  </el-upload>
+                  <div style="margin-top:20px">
+                    <span style="color:#5a81a9;font-size:14px">模拟上传文件.word</span>
+                    <el-link type="danger" style="margin-left:20px" @click="downTemplate">下载</el-link>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
         </el-card>
       </el-card>
 
       <el-card class="box-card">
         <div class="condition">
-          <div class="condition-col">流水号:<el-input v-model="conditionInputs.lsh" placeholder="请输入内容" clearable> </el-input></div>
+          <div class="condition-col"><span style="margin-left:15px"></span>流水号:<el-input v-model="conditionInputs.lsh" placeholder="请输入内容" clearable> </el-input></div>
           <div class="condition-col">来文内容:<el-input v-model="conditionInputs.lwnr" placeholder="请输入内容" clearable> </el-input></div>
           <div class="condition-col">
-            收文时间:<el-date-picker v-model="conditionInputs.lwsj1" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>-
+            登记日期:<el-date-picker v-model="conditionInputs.lwsj1" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>-
             <el-date-picker v-model="conditionInputs.lwsj2" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
           </div>
           <div class="condition-col">
@@ -174,23 +212,38 @@
             </el-select>
           </div>
           <div class="condition-col">
-            <el-button>查询</el-button>
-            <el-button>扫码签收</el-button>
+            <el-button @click="search">查询</el-button>
           </div>
         </div>
-        <el-table :data="tableData" style="width: 100%;height:500px;">
+        <el-table :data="tableData" style="width: 100%;height:500px;" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="50px"></el-table-column>
           <el-table-column label="序号" type="index" width="50px" align="center"></el-table-column>
-          <el-table-column label="文件类型" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="流水号" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="收文时间" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="文号" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="来文单位" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="来文内容" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="办理情况" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="登记人" prop="wjlx" width="180" align="center"> </el-table-column>
-          <el-table-column label="操作" align="center">
+          <el-table-column label="文件类型" prop="wjlx" align="center"> </el-table-column>
+          <el-table-column label="流水号" prop="wjlx" align="center"> </el-table-column>
+          <el-table-column label="登记时间" prop="wjlx" align="center"> </el-table-column>
+          <el-table-column label="文号" prop="wjlx" align="center"> </el-table-column>
+          <el-table-column label="送呈单位" prop="wjlx" align="center"> </el-table-column>
+          <el-table-column label="来文内容" prop="wjlx"> </el-table-column>
+          <el-table-column label="办理情况" prop="wjlx" align="center">
             <template slot-scope="scope">
-              <el-button size="mini" @click="signForevent(scope.row)">签收</el-button>
+              <span v-if="scope.row.wjlx === 0">未审核</span>
+              <span v-if="scope.row.wjlx === 1">已审核</span>
+              <span v-else>{{ scope.row.wjlx }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="登记人" prop="wjlx" align="center"> </el-table-column>
+          <el-table-column label="文件状态" prop="wjlx" align="center">
+            <template slot-scope="scope">
+              <span v-if="scope.row.wjlx === 0">签收</span>
+              <span v-if="scope.row.wjlx === 1">已签收</span>
+              <!-- <el-button v-else size="mini" @click="signForevent(scope.row)">签收</el-button> -->
+              <span v-else>{{ scope.row.wjlx }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="100" align="center">
+            <template slot-scope="scope">
+              <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
+              <el-link type="danger" style="margin-left:10px" @click="tabeleDel(scope.$index)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -198,19 +251,19 @@
       </el-card>
     </div>
 
-    <signFordialog :sig="sigDialogVisible" @setsig="getsig"></signFordialog>
+    <SignFordialog :sig="sigDialogVisible" @setsig="getsig"></SignFordialog>
 
     <LogDialog :is-show="logDialogVisible" @SetClose="SetClose" />
   </div>
 </template>
 
 <script>
-import signFordialog from './Dialog/signFordialog'
+import SignFordialog from './Dialog/signFordialog'
 import LogDialog from './LogDialog/instructionsDialog'
 export default {
   components: {
     // 扫码签收
-    signFordialog,
+    SignFordialog,
     // 日志弹出组件
     LogDialog
   },
@@ -240,12 +293,26 @@ export default {
       sigDialogVisible: false,
       logDialogVisible: false, // 显示日志弹出框
       // 批示数据
-      InstructionsForm: {
+      InstructionBox: [
+        {
+          InstructionsForm: {
+            name: ''
+          }
+        }
+      ],
+      // 办结数据
+      FinishForm: {
         name: ''
-      }
+      },
+      // 上传文件列表
+      fileList: [],
+      // 表格选择项
+      multipleSelection: []
     }
   },
   methods: {
+    // 搜索按钮
+    search() {},
     // 日志按钮
     LogBtn() {
       this.logDialogVisible = true
@@ -290,6 +357,48 @@ export default {
     // 组件传参->接收参数 关闭日志
     SetClose(data) {
       this.logDialogVisible = data
+    },
+    // 点击领导名字增加批示框
+    addDomain() {
+      this.InstructionBox.push({
+        InstructionsForm: {
+          name: ''
+        }
+      })
+    },
+    // 批示框里删除按钮
+    delInstructions(index) {
+      if (index !== -1) {
+        this.InstructionBox.splice(index, 1)
+      }
+    },
+    // 上传列表删除
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    // 上传列表删除前
+    beforeRemove(file, fileList) {
+      console.log(file, fileList)
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    // 上传文件超出
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    // 下载附件按钮
+    downTemplate() {},
+    // 表格删除按钮
+    tabeleDel(index) {
+      this.tableData.splice(index, 1)
+    },
+    // 表格查看按钮
+    tableView(row) {
+      console.log(row)
+    },
+    // 表格选择项发生变化时
+    handleSelectionChange(val) {
+      console.log(val)
+      this.multipleSelection = val
     }
   }
 }
@@ -330,9 +439,18 @@ export default {
   margin: 0 auto;
   margin-bottom: 15px;
 }
+.delete_btn_class {
+  /* padding-top: 5px; */
+  /* line-height: 8 !important; */
+  margin-left: 20px;
+  padding: 30px 15px;
+}
+::v-deep .delete_btn_class span {
+  writing-mode: tb-rl;
+}
 .condition {
   width: 100%;
-  height: 50px;
+  /* height: 50px; */
   line-height: 50px;
   margin-bottom: 10px;
 }
