@@ -760,8 +760,8 @@ export default {
 ::v-deep .delete_btn_class span {
   writing-mode: tb-rl;
 }
-.del_btn {
-  /* height: 50%;
-  margin-left: 20px; */
-}
+/* .del_btn {
+  height: 50%;
+  margin-left: 20px
+} */
 </style>
