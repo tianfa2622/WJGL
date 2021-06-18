@@ -13,98 +13,129 @@
         <div class="condition">
           <div class="condition-col">
             活动时间:
-            <el-date-picker
-              v-model="conditionInputs.sj"
-              value-format="yyyy-MM-dd"
-              type="date"
-              placeholder="开始日期"
-            >
-            </el-date-picker
-            >-
-            <el-date-picker
-              v-model="conditionInputs.sj1"
-              value-format="yyyy-MM-dd"
-              type="date"
-              placeholder="结束日期"
-            >
-            </el-date-picker>
+            <el-date-picker v-model="activityTime" type="datetimerange" value-format="yyyy/MM/dd" format="yyyy/MM/dd" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="{ firstDayOfWeek: 1 }" @change="GetHDTime"> </el-date-picker>
           </div>
+          <div class="condition-col">报表标题:<el-input v-model="conditionInputs.bbbt" style="width:350px" placeholder="请输入内容" clearable> </el-input></div>
           <div class="condition-col">
-            报表标题:<el-input
-              placeholder="请输入内容"
-              v-model="conditionInputs.bbbt"
-              clearable
-            >
-            </el-input>
-          </div>
-          <div class="condition-col">
-            排序方式:<el-select
-              v-model="conditionInputs.pxfs"
-              clearable
-              placeholder="请选择"
-            >
-              <el-option
-                v-for="item in pxfsSelect"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
+            排序方式:<el-select v-model="conditionInputs.pxfs" clearable placeholder="请选择">
+              <el-option v-for="item in pxfsSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select>
           </div>
           <div class="condition-col">
-            <el-button>查询</el-button>
-            <el-button>导出Excel</el-button>
+            <el-button @click="search">查询</el-button>
+            <el-button @click="exportExcel">导出Excel</el-button>
           </div>
         </div>
-        <el-table :data="tableData" style="width: 100%;height:500px;">
-          <el-table-column
-            type="index"
-            label="序号"
-            align="center"
-          ></el-table-column>
-          <el-table-column label="建议编号" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="建议内容" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="代表姓名" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="联系方式" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="主办单位" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="分办单位" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="要求办结时间" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="实际办结时间" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="备注" prop="wjlx" align="center">
-          </el-table-column>
-          <el-table-column label="份数" prop="wjlx" align="center">
-          </el-table-column>
-        </el-table>
+        <el-row type="flex" class="tableBox" justify="center">
+          <el-col :span="20" class="tableTitlebox">
+            <span class="tableLabel">{{ tableTitle }}</span>
+          </el-col>
+          <el-col :span="20">
+            <el-table :data="tableData" border fit style="width: 100%;height:500px;">
+              <el-table-column prop="wjlx" label="序号" width="50" align="center" :resizable="false"></el-table-column>
+              <el-table-column label="建议编号" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="建议标题" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="领衔委员" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="主办单位" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="会办单位" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="主办责任部门" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="会办部门" prop="wjlx" :resizable="false" align="center"> </el-table-column>
+              <el-table-column label="备注" :resizable="false" prop="wjlx" align="center"> </el-table-column>
+            </el-table>
+          </el-col>
+        </el-row>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
+import dayjs from 'dayjs'
 export default {
-  data () {
+  data() {
     return {
+      activityTime: null,
       conditionInputs: {
         sj: '',
         sj1: '',
         bbbt: '',
         pxfs: ''
       },
-      pxfsSelect: [],
       tableData: [
         {
           wjlx: '1'
         }
-      ]
+      ],
+      pxfsSelect: [
+        { label: '升序', value: '升序' },
+        { label: '降序', value: '降序' }
+      ],
+      tableTitle: ''
+    }
+  },
+  created() {
+    this.getThisWeek()
+    this.tableTitle = this.InitialValue(this.conditionInputs.startTime, this.conditionInputs.endTime)
+    this.conditionInputs.bbbt = this.tableTitle
+  },
+  methods: {
+    // 默认选择本周显示
+    getThisWeek() {
+      this.activityTime = []
+      const now = new Date()
+      this.activityTime[0] = dayjs(now)
+        .startOf('week')
+        .day(1)
+        .format('YYYY/MM/DD')
+      this.activityTime[1] = dayjs(now)
+        .endOf('week')
+        .day(7)
+        .format('YYYY/MM/DD')
+      this.GetHDTime()
+    },
+    // 活动时间戳设置
+    GetHDTime() {
+      if (this.activityTime !== null) {
+        this.conditionInputs.startTime = this.activityTime[0]
+        this.conditionInputs.endTime = this.activityTime[1]
+      }
+    },
+    // 标题初始值格式
+    InitialValue(time1, time2) {
+      const value = `人大建议一览表（${time1}-${time2}）`
+      return value
+    },
+    // 搜索按钮
+    search() {
+      this.conditionInputs.bbbt = this.InitialValue(this.conditionInputs.startTime, this.conditionInputs.endTime)
+      if (this.conditionInputs.bbbt !== this.tableTitle && this.conditionInputs.bbbt !== '') {
+        this.tableTitle = this.conditionInputs.bbbt
+      }
+    },
+    // 导出按钮
+    exportExcel() {
+      this.exportToExcel()
+    },
+    // excel 数据导出
+    exportToExcel() {
+      const tHeader = ['序号', '建议编号', '建议标题', '领衔委员', '主办单位', '会办单位', '主办责任部门', '会办部门', '备注']
+      const filterVal = ['wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx']
+      const title = this.conditionInputs.bbbt
+      import('@/components/excel/Export2Excel').then(excel => {
+        const list = this.tableData
+        const data = this.formatJson(filterVal, list)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: title,
+          autoWidth: true,
+          bookType: 'xlsx'
+        })
+      })
+    },
+    // 导出数据处理
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]))
     }
   }
 }
@@ -132,7 +163,7 @@ export default {
 }
 .condition {
   width: 100%;
-  height: 50px;
+  /* height: 50px; */
   line-height: 50px;
   margin-bottom: 10px;
 }
@@ -147,5 +178,17 @@ export default {
 .condition .el-select {
   width: 180px;
   margin: 0 5px 0 5px;
+}
+.tableBox {
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+.tableLabel {
+  font-size: 30px;
+  font-weight: 700;
+}
+.tableTitlebox {
+  text-align: center;
+  margin-bottom: 20px;
 }
 </style>
