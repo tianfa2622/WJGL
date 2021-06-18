@@ -1,0 +1,248 @@
+<template>
+  <div class="Log_content">
+    <el-row type="flex" justify="space-around">
+      <el-col :span="18">
+        <el-form :model="form" inline>
+          <el-form-item label="">
+            <el-select v-model="form.state" style="width:150px" placeholder="账号状态">
+              <el-option label="正常" :value="1"></el-option>
+              <el-option label="已禁用" :value="0"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="">
+            <el-input v-model="form.str" style="width:300px" placeholder="请输入姓名或警号"></el-input>
+          </el-form-item>
+          <el-form-item label="">
+            <!-- <el-input v-model="form.dw" placeholder="请输入单位"></el-input> -->
+            <el-select v-model="form.dw" placeholder="请选择单位">
+              <el-option label="单位一" :value="1"></el-option>
+              <el-option label="单位二" :value="0"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="4">
+        <el-button type="primary" @click="search">查询</el-button>
+        <el-button type="primary" @click="add">新增</el-button>
+      </el-col>
+    </el-row>
+    <el-row type="flex" justify="space-around">
+      <el-col :span="23">
+        <el-table :data="tableData" border style="width: 100%">
+          <el-table-column prop="xh" label="序号" width="80"> </el-table-column>
+          <el-table-column prop="zh" label="登录账号"> </el-table-column>
+          <el-table-column prop="xm" label="姓名"> </el-table-column>
+          <el-table-column prop="sjh" label="手机号码"> </el-table-column>
+          <el-table-column prop="bgs" label="办公室"> </el-table-column>
+          <el-table-column prop="bgsdh" label="办公室电话"> </el-table-column>
+          <el-table-column prop="sszz" label="所属组织结构"> </el-table-column>
+          <el-table-column prop="ssjs" label="所属角色"> </el-table-column>
+          <el-table-column prop="zt" label="账号状态" align="center" width="100px">
+            <template slot-scope="scope">
+              <el-switch v-model="scope.row.zt" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeCurrentState"> </el-switch>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" width="80px">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="modify(scope.row)">修改</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column label="密码" align="center" width="80px">
+            <template slot-scope="scope">
+              <el-button type="text" size="small" @click="reset(scope.row)">重置</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+    <el-row type="flex" justify="center" class="mt-20">
+      <el-pagination :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+    </el-row>
+
+    <!-- 弹出层 -->
+    <el-dialog :title="title" center :visible.sync="dialogVisible" width="30%" @close="handleClose"></el-dialog>
+      <el-row>
+        <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px">
+          <el-form-item label="登录账号" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="请输入登录账号"></el-input>
+          </el-form-item>
+          <el-form-item label="联系人" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="请输入联系人姓名"></el-input>
+          </el-form-item>
+          <el-form-item label="联系电话" prop="name">
+            <el-input v-model.number="ruleForm.name" placeholder="请输入联系人电话号码"></el-input>
+          </el-form-item>
+          <el-form-item label="办公室" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="请输入办公室名称"></el-input>
+          </el-form-item>
+          <el-form-item label="办公室电话" prop="name">
+            <el-input v-model="ruleForm.name" placeholder="请输入办公室电话"></el-input>
+          </el-form-item>
+          <el-form-item label="账号级别" prop="name">
+            <el-select v-model="ruleForm.jb" class="form_select_wd" placeholder="请选择级别" @change="ChangeCurrentState($event)">
+              <el-option label="上级单位" :value="0"></el-option>
+              <el-option label="本级单位" :value="1"></el-option>
+              <el-option label="下级单位" :value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="账号范围" prop="name">
+            <el-select v-model="ruleForm.fw" class="form_select_wd" placeholder="请选择范围">
+              <el-option v-for="(op, index) in options" :key="index" :label="op.label" :value="op.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="所属角色" prop="name">
+            <el-select v-model="ruleForm.name" class="form_select_wd" placeholder="请选择范围">
+              <el-option v-for="(op1, index) in options1" :key="index" :label="op1.label" :value="op1.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="">
+            <span>默认密码为联系人电话！</span>
+          </el-form-item>
+        </el-form>
+      </el-row>
+
+      <span slot="footer">
+        <el-button style="margin-right:20px" class="footer_btn" @click="handleClose">取 消</el-button>
+        <el-button style="margin-left:20px" class="footer_btn" type="primary" @click="dialogVisible = false">添 加</el-button>
+      </span>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      form: {
+        state: null,
+        str: null,
+        dw: null
+      },
+      tableData: [
+        {
+          xh: '1',
+          zh: 'zxyz',
+          xm: '张三',
+          sjh: '15211111111',
+          bgs: '',
+          bgsdh: '',
+          sszz: '',
+          ssjs: '',
+          zt: 0
+        }
+      ],
+      ruleForm: { name: '', fw: null, jb: null },
+      rules: {
+        name: [
+          { required: true, message: '请输入活动名称', trigger: 'blur' },
+          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ]
+      },
+      options: [],
+      options1: [
+        { label: '填报员', value: 1 },
+        { label: '管理员', value: 0 }
+      ],
+      currentPage: 1,
+      title: '',
+      dialogVisible: false
+    }
+  },
+  methods: {
+    // 弹出层关闭
+    handleClose() {
+      this.ruleForm = {}
+      this.dialogVisible = false
+    },
+    // 切换每页条数
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    // 切换当前页码
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
+    },
+    search() {},
+    // 添加
+    add() {
+      this.title = '添加账号'
+      this.dialogVisible = true
+    },
+    // 修改
+    modify(row) {
+      console.log(row)
+      this.title = '修改账号'
+      this.dialogVisible = true
+    },
+    // 重置密码
+    reset(row) {
+      console.log(row)
+      this.title = '重置密码'
+      this.dialogVisible = true
+    },
+    // 选择级别选择框的值发生改变时触发
+    ChangeCurrentState(val) {
+      this.options = []
+      this.ruleForm.fw = null
+      if (val === 0) {
+        this.options.push({ label: '湖南省公安厅', value: 101 })
+      } else if (val === 1) {
+        let list1 = []
+        list1 = [
+          { label: '湖南省公安厅', value: 101 },
+          { label: '长沙市公安局', value: 102 }
+        ]
+        this.options.push(...list1)
+      } else {
+        this.options.push({ label: '长沙市芙蓉分局', value: 10201 })
+      }
+    }
+  }
+}
+</script>
+
+<style>
+.Log_content {
+  height: 100%;
+  width: 100%;
+  margin-top: 20px;
+}
+/* switch按钮样式 */
+.switch_style .el-switch__label {
+  position: absolute;
+  display: none;
+  color: #fff !important;
+}
+/*打开时文字位置设置*/
+.switch_style .el-switch__label--right {
+  z-index: 1;
+}
+/* 调整打开时文字的显示位子 */
+.switch_style .el-switch__label--right span {
+  margin-right: 12px;
+}
+/*关闭时文字位置设置*/
+.switch_style .el-switch__label--left {
+  z-index: 1;
+}
+/* 调整关闭时文字的显示位子 */
+.switch_style .el-switch__label--left span {
+  margin-left: 12px;
+}
+/*显示文字*/
+.switch_style .el-switch__label.is-active {
+  display: block;
+}
+/* 调整按钮的宽度 */
+.switch_style.el-switch .el-switch__core,
+.el-switch .el-switch__label {
+  width: 70px !important;
+  margin: 0;
+}
+.form_select_wd {
+  width: 100%;
+}
+.footer_btn {
+  padding: 10px 30px;
+}
+</style>
