@@ -39,7 +39,7 @@
           <el-table-column prop="ssjs" label="所属角色"> </el-table-column>
           <el-table-column prop="zt" label="账号状态" align="center" width="100px">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.zt" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeCurrentState"> </el-switch>
+              <el-switch v-model="scope.row.zt" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeState(scope.row)"> </el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80px">
@@ -60,8 +60,17 @@
     </el-row>
 
     <!-- 弹出层 -->
-    <el-dialog :title="title" center :visible.sync="dialogVisible" width="30%" @close="handleClose"></el-dialog>
-      <el-row>
+    <el-dialog :title="title" class="dialog_class" center :visible.sync="dialogVisible" width="30%" @close="handleClose">
+      <!-- 重置密码 -->
+      <el-row v-if="title === '重置密码'">
+        <el-form ref="passwordForm" :model="passwordForm" :rules="rules">
+          <el-form-item label="" prop="name">
+            <el-input v-model="passwordForm.name" show-password placeholder="请输入新密码"></el-input>
+          </el-form-item>
+        </el-form>
+      </el-row>
+      <!-- 添加/修改 -->
+      <el-row v-else>
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px">
           <el-form-item label="登录账号" prop="name">
             <el-input v-model="ruleForm.name" placeholder="请输入登录账号"></el-input>
@@ -100,10 +109,9 @@
           </el-form-item>
         </el-form>
       </el-row>
-
       <span slot="footer">
         <el-button style="margin-right:20px" class="footer_btn" @click="handleClose">取 消</el-button>
-        <el-button style="margin-left:20px" class="footer_btn" type="primary" @click="dialogVisible = false">添 加</el-button>
+        <el-button style="margin-left:20px" class="footer_btn" type="primary" @click="confirmAdd">添 加</el-button>
       </span>
     </el-dialog>
   </div>
@@ -132,6 +140,7 @@ export default {
         }
       ],
       ruleForm: { name: '', fw: null, jb: null },
+      passwordForm: { mm: null },
       rules: {
         name: [
           { required: true, message: '请输入活动名称', trigger: 'blur' },
@@ -180,6 +189,10 @@ export default {
       this.title = '重置密码'
       this.dialogVisible = true
     },
+    // 表格项状态改变
+    ChangeState(row) {
+      console.log(row)
+    },
     // 选择级别选择框的值发生改变时触发
     ChangeCurrentState(val) {
       this.options = []
@@ -195,6 +208,18 @@ export default {
         this.options.push(...list1)
       } else {
         this.options.push({ label: '长沙市芙蓉分局', value: 10201 })
+      }
+    },
+    // 弹出框添加按钮
+    confirmAdd() {
+      this.dialogVisible = false
+      switch (this.title) {
+        case '重置密码':
+          this.passwordForm = {}
+          break
+        default:
+          this.ruleForm = {}
+          break
       }
     }
   }
@@ -244,5 +269,8 @@ export default {
 }
 .footer_btn {
   padding: 10px 30px;
+}
+.dialog_class .el-dialog__body {
+  padding: 10px 20px 10px;
 }
 </style>

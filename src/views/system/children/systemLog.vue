@@ -56,7 +56,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .Log_content {
   height: 100%;
   width: 100%;

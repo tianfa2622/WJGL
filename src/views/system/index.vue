@@ -6,13 +6,13 @@
           <User />
         </el-tab-pane>
         <el-tab-pane label="角色管理" name="second">
-          <!-- <Role /> -->
+          <Role />
         </el-tab-pane>
         <el-tab-pane label="字典管理" name="third">
-          <!-- <Dictionary /> -->
+          <Dictionary />
         </el-tab-pane>
         <el-tab-pane label="组织机构" name="fourth">
-          <!-- <Mechanism /> -->
+          <Mechanism />
         </el-tab-pane>
         <el-tab-pane label="系统日志" name="fifth">
           <SystemLog />
@@ -24,18 +24,18 @@
 
 <script>
 import User from './children/systemUser.vue' // 用户管理
-// import Role from './children/role' // 角色管理
+import Role from './children/systemRole.vue' // 角色管理
 // import Equipment from './children/equipment' // 设备管理
-// import Dictionary from './children/dictionary' // 字典管理
-// import Mechanism from './children/mechanism' // 组织机构
+import Dictionary from './children/systemDictionary.vue' // 字典管理
+import Mechanism from './children/systemMechanism.vue' // 组织机构
 import SystemLog from './children/systemLog' // 系统日志
 export default {
   components: {
     User,
-    //   Role,
+    Role,
+    Dictionary,
     //   Equipment,
-    //   Dictionary,
-    //   Mechanism,
+    Mechanism,
     SystemLog
   },
   data() {
@@ -64,4 +64,7 @@ export default {
   width: 100%;
   height: 100%;
 } */
+.mt-20 {
+  margin-top: 20px;
+}
 </style>

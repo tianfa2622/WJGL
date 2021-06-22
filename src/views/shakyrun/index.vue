@@ -490,7 +490,7 @@ export default {
     clearData(index, row) {
       console.log(index, row)
       // this.tableData.splice(index, 1)
-      Object.assign(this.$data.tableData[index], this.$options.data().tableData[index])
+      Object.assign(this.$data.tableData[index], this.$options.data().tableData[0])
     },
     // 选择领导框按钮
     selectLd(data) {
