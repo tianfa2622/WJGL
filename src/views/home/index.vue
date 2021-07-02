@@ -19,7 +19,9 @@ export default {
   components: {
     Header,
     NavMenu
-  }
+  },
+  created() {},
+  methods: {}
 }
 </script>
 

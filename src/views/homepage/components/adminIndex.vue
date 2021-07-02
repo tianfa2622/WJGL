@@ -7,17 +7,8 @@
           <span>一般文件</span>
         </div>
         <el-table :data="tableDataOne" border style="width: 100%">
-          <el-table-column
-            type="index"
-            label="序号"
-            align="center"
-            width="50px"
-          ></el-table-column>
-          <el-table-column
-            prop="adminName"
-            label="文件类型"
-            align="center"
-          ></el-table-column>
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="adminName" label="文件类型" align="center"></el-table-column>
           <el-table-column label="五天以上未办结数" align="center">
             <template slot-scope="scope">
               <el-link type="primary">{{ scope.row.adminName }}</el-link>
@@ -40,17 +31,8 @@
           <span>督办件</span>
         </div>
         <el-table :data="tableDataTwo" border style="width: 100%">
-          <el-table-column
-            type="index"
-            label="序号"
-            align="center"
-            width="50px"
-          ></el-table-column>
-          <el-table-column
-            prop="adminName"
-            label="文件类型"
-            align="center"
-          ></el-table-column>
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="adminName" label="文件类型" align="center"></el-table-column>
           <el-table-column label="三天内到期数" align="center">
             <template slot-scope="scope">
               <el-link type="primary">{{ scope.row.adminName }}</el-link>
@@ -78,17 +60,8 @@
           <span>提案建议</span>
         </div>
         <el-table :data="tableDataThree" border style="width: 100%">
-          <el-table-column
-            type="index"
-            label="序号"
-            align="center"
-            width="50px"
-          ></el-table-column>
-          <el-table-column
-            prop="adminName"
-            label="文件类型"
-            align="center"
-          ></el-table-column>
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="adminName" label="文件类型" align="center"></el-table-column>
           <el-table-column label="十天内到期数" align="center">
             <template slot-scope="scope">
               <el-link type="primary">{{ scope.row.adminName }}</el-link>
@@ -121,22 +94,22 @@ export default {
     return {
       tableDataOne: [
         {
-          adminName: "rich",
-        },
+          adminName: 'rich'
+        }
       ],
       tableDataTwo: [
         {
-          adminName: "rich",
-        },
+          adminName: 'rich'
+        }
       ],
       tableDataThree: [
         {
-          adminName: "rich",
-        },
-      ],
-    };
-  },
-};
+          adminName: 'rich'
+        }
+      ]
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -158,7 +131,7 @@ export default {
 .clearfix:before,
 .clearfix:after {
   display: table;
-  content: "";
+  content: '';
 }
 .clearfix:after {
   clear: both;

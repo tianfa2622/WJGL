@@ -26,8 +26,7 @@ const routes = [
       {
         path: '/instructions',
         name: '呈批件',
-        component: () =>
-          import('@/views/infoRegister/RegularFiles/instructions')
+        component: () => import('@/views/infoRegister/RegularFiles/instructions')
       },
       {
         path: '/getfile',
@@ -52,14 +51,12 @@ const routes = [
       {
         path: '/topSupervision',
         name: '上级督办件',
-        component: () =>
-          import('@/views/infoRegister/Supervision/topSupervision')
+        component: () => import('@/views/infoRegister/Supervision/topSupervision')
       },
       {
         path: '/hallSupervision',
         name: '厅批督办件',
-        component: () =>
-          import('@/views/infoRegister/Supervision/hallSupervision')
+        component: () => import('@/views/infoRegister/Supervision/hallSupervision')
       },
       {
         path: '/plan',
@@ -147,6 +144,16 @@ const routes = [
         component: () => import('@/views/system/index')
       }
     ]
+  },
+  {
+    path: '/404',
+    name: 'error',
+    component: () => import('@/views/error/404')
+  },
+  {
+    path: '/dw',
+    name: 'error1',
+    component: () => import('@/views/error/Disconnected')
   }
 ]
 

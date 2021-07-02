@@ -13,7 +13,7 @@ export default {
     UserIndex,
     AdminIndex
   },
-  data () {
+  data() {
     return {}
   }
 }

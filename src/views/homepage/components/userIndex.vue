@@ -7,17 +7,8 @@
           <span>呈批件</span>
         </div>
         <el-table :data="tableDataOne" border style="width: 100%">
-          <el-table-column
-            type="index"
-            label="序号"
-            align="center"
-            width="50px"
-          ></el-table-column>
-          <el-table-column
-            prop="adminName"
-            label="文件类型"
-            align="center"
-          ></el-table-column>
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="adminName" label="文件类型" align="center"></el-table-column>
           <el-table-column label="未查看" align="center">
             <template slot-scope="scope">
               <el-link type="primary">{{ scope.row.adminName }}</el-link>
@@ -45,17 +36,8 @@
           <span>文件统计</span>
         </div>
         <el-table :data="tableDataTwo" border style="width: 100%">
-          <el-table-column
-            type="index"
-            label="序号"
-            align="center"
-            width="50px"
-          ></el-table-column>
-          <el-table-column
-            prop="adminName"
-            label="文件类型"
-            align="center"
-          ></el-table-column>
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="adminName" label="文件类型" align="center"></el-table-column>
           <el-table-column label="未查看" align="center">
             <template slot-scope="scope">
               <el-link type="primary">{{ scope.row.adminName }}</el-link>
@@ -79,7 +61,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       tableDataOne: [
         {
