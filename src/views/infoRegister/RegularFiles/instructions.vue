@@ -21,11 +21,12 @@
             </el-col>
           </el-row>
         </div>
+
         <!-- 基本信息 -->
         <el-card class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>基本信息</span>
-            <el-button style="float: right;" type="primary" @click="submitForm('ruleForm')">提交</el-button>
+            <el-button style="float: right;" type="primary" :disabled="disabled" @click="submitForm('ruleForm')">提交</el-button>
             <!-- <el-button
               @click="resetForm('ruleForm')"
               style="float: right; padding: 3px 10px"
@@ -33,7 +34,7 @@
               >重置</el-button
             > -->
           </div>
-          <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="120px" class="demo-ruleForm">
+          <el-form ref="ruleForm" :disabled="disabled" :validate-on-rule-change="false" :model="ruleForm" :rules="rules" label-width="120px" class="demo-ruleForm">
             <el-row>
               <el-col :span="12">
                 <el-form-item label="流水号：">
@@ -41,27 +42,27 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="联系人：" prop="phone_name" required>
+                <el-form-item label="联系人：" prop="phone_name">
                   <el-input v-model="ruleForm.phone_name" placeholder="请输入联系人"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="来文内容：" prop="content" required>
+                <el-form-item label="来文内容：" prop="content">
                   <el-input v-model="ruleForm.content" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="送呈单位：" prop="company" required>
+                <el-form-item label="送呈单位：" prop="company">
                   <el-input v-model="ruleForm.company" placeholder="请选择单位"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="登记日期：" prop="creat_date" required>
-                  <el-date-picker v-model="ruleForm.creat_date" type="date" style="width:100%" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                <el-form-item label="登记日期：" prop="creat_date">
+                  <el-date-picker v-model="ruleForm.creat_date" type="datetime" style="width:100%" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -105,6 +106,7 @@
             </el-row>
           </el-form>
         </el-card>
+
         <!-- 送呈领导 -->
         <el-card v-if="$store.state.code == 1" class="box-card  Children">
           <div slot="header" class="clearfix">
@@ -112,63 +114,69 @@
           </div>
 
           <el-row>
-            <el-col :span="4" style="text-align:center"><div style="padding:15px 0;">领导批示：</div></el-col>
-            <el-col :span="18"><el-button v-for="o in 12" :key="o" plain class="leadershipBtn" @click="addDomain">徐显辉</el-button></el-col>
+            <el-col :span="4" style="text-align:center"><div style="padding:10px 0;">领导批示：</div></el-col>
+            <el-col :span="18">
+              <el-button v-for="(ld, index) in Ldlist" :key="index" plain class="leadershipBtn" @click="addDomain(ld)">
+                {{ ld.name }}
+              </el-button>
+            </el-col>
           </el-row>
 
           <el-row type="flex" justify="center" style="margin-top:20px">
             <el-col :span="22">
-              <el-card v-for="(item, index) in InstructionBox" :key="index" class="box-card">
+              <el-card v-for="(item, index) in ruleForm.sclds" :key="index" class="box-card">
                 <el-row type="flex" justify="space-between" align="middle">
                   <el-col :span="20">
-                    <el-form ref="InstructionsForm" :model="item.InstructionsForm" label-width="90px" class="demo-dynamic">
+                    <el-form ref="InstructionsForm" :disabled="disabled === true ? disabled : item.read_circle" label-width="90px" class="demo-dynamic">
                       <el-row>
                         <el-col :span="8">
                           <el-form-item label="批示人：">
-                            <span>{{ item.InstructionsForm.name ? item.InstructionsForm.name : '徐显辉' }}</span>
+                            <span>{{ item.approved_by }}</span>
                           </el-form-item>
                         </el-col>
                         <el-col :span="16">
                           <el-form-item label="批示时间：">
-                            <el-date-picker v-model="item.InstructionsForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                            <el-button style="margin-left:10px">圈阅</el-button>
+                            <el-date-picker v-model="item.instructions_data" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                            <el-button style="margin-left:10px" @click="item.read_circle = true">{{ item.read_circle === true ? '已圈阅' : '圈阅' }}</el-button>
                           </el-form-item>
                         </el-col>
                       </el-row>
                       <el-form-item label="批示内容：">
-                        <el-input v-model="item.InstructionsForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                        <el-input v-model="item.content" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                       </el-form-item>
                     </el-form>
                   </el-col>
                   <el-col :span="3">
-                    <el-button type="danger" class="delete_btn_class" @click="delInstructions(index)">删 除</el-button>
+                    <el-button type="danger" class="delete_btn_class" :disabled="disabled" @click="delInstructions(index)">删 除</el-button>
                   </el-col>
                 </el-row>
               </el-card>
             </el-col>
           </el-row>
         </el-card>
+
         <!-- 办结 -->
         <el-card v-if="$store.state.code == 1" class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>办结</span>
           </div>
           <el-row type="flex" justify="center">
-            <el-form ref="FinishForm" :model="FinishForm" label-width="90px" class="demo-dynamic">
+            <el-form ref="FinishForm" :model="bjsj" :disabled="disabled === true ? disabled : bjsj.accom" label-width="90px" class="demo-dynamic">
               <el-col :span="18">
                 <el-form-item label="办结时间：">
-                  <el-date-picker v-model="FinishForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                  <el-button style="margin-left:30px" type="primary">办结</el-button>
+                  <el-date-picker v-model="bjsj.conclude_data" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                  <el-button style="margin-left:30px" type="primary" @click="bjsj.accom = true">{{ bjsj.accom === true ? '已办结' : '办结' }}</el-button>
                 </el-form-item>
               </el-col>
               <el-col :span="18">
                 <el-form-item label="备注：">
-                  <el-input v-model="FinishForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                  <el-input v-model="bjsj.comment" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
             </el-form>
           </el-row>
         </el-card>
+
         <!-- 附件 -->
         <el-card v-if="$store.state.code == 1" class="box-card  Children">
           <div slot="header" class="clearfix">
@@ -219,7 +227,7 @@
             <el-button style="width:150px" @click="search(conditionInputs)">查询</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" style="width: 100%;height:500px;" border @selection-change="handleSelectionChange">
+        <el-table :data="tableData" style="width: 100%;" border height="500" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50px"></el-table-column>
           <el-table-column label="序号" type="index" width="50px" align="center"></el-table-column>
           <el-table-column label="文件类型" prop="file_type" align="center">
@@ -245,13 +253,13 @@
             <template slot-scope="scope">
               <span v-if="scope.row.file_status === 1">签收</span>
               <span v-if="scope.row.file_status === 0">已签收</span>
-              <!-- <el-button v-else size="mini" @click="signForevent(scope.row)">签收</el-button> -->
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="center">
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
-              <el-link type="danger" style="margin-left:10px" @click="tabeleDel(scope.$index)">删除</el-link>
+              <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link>
+              <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -270,7 +278,9 @@ import SignFordialog from './Dialog/signFordialog'
 import LogDialog from './LogDialog/instructionsDialog'
 import { getProjectNum } from '@/utils/comm'
 // eslint-disable-next-line no-unused-vars
-import { searchAll, Add } from '@/api/infoRegister/RegularFiles/instructions'
+import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/RegularFiles/instructions'
+import { validatePhoneTwo, validateContacts } from '@/utils/verification'
+import dayjs from 'dayjs'
 export default {
   components: {
     // 扫码签收
@@ -283,10 +293,31 @@ export default {
       ruleForm: {
         serial_num: getProjectNum(),
         registrant: '王湘琴',
-        registrant_company: '厅长秘书处'
+        registrant_company: '厅长秘书处',
+        creat_date: new Date(),
+        phone_name: null,
+        content: null,
+        company: null,
+        phone: null,
+        reference_num: null,
+        bmjzyj: null,
+        comment: null,
+        sclds: [],
+        accomPlishes: []
       },
       rules: {
-        name: [{ required: true, message: '请输入流水号', trigger: 'blur' }]
+        phone_name: [
+          { required: true, message: '请输入联系人', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
+        ],
+        content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
+        company: [{ required: true, message: '请选择单位', trigger: 'blur' }],
+        creat_date: [{ required: true, message: '请选择日期', trigger: 'blur' }],
+        phone: [
+          { required: false, trigger: 'blur' },
+          { validator: validatePhoneTwo, trigger: 'blur' }
+        ],
+        hz: [{ validator: validateContacts, trigger: 'blur' }]
       },
       options: [],
       blqkSelect: [
@@ -303,16 +334,12 @@ export default {
       pageSize: 10,
       // 总数
       total: 20,
+      // 领导数据
+      Ldlist: [],
       sigDialogVisible: false,
       logDialogVisible: false, // 显示日志弹出框
       // 批示数据
-      InstructionBox: [
-        {
-          InstructionsForm: {
-            name: ''
-          }
-        }
-      ],
+      InstructionBox: [],
       // 办结数据
       FinishForm: {
         name: ''
@@ -332,11 +359,20 @@ export default {
         { value: 8, label: '厅批督办件' },
         { value: 9, label: '政协提案' },
         { value: 10, label: '人大建议' }
-      ]
+      ],
+      bjsj: {
+        conclude_data: new Date(),
+        accom: false,
+        _id: getProjectNum()
+      },
+      disabled: false,
+      BtnType: 'Add',
+      OldData: {}
     }
   },
   created() {
     this.search()
+    this.getLdList()
   },
   methods: {
     // 搜索按钮
@@ -344,11 +380,16 @@ export default {
       try {
         const pageData = {}
         let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+        }
         pageData.pageIndex = this.currentPage
         pageData.pageSize = this.pageSize
         paramsData = { ...data }
-        paramsData.start_date = this.timeData[0]
-        paramsData.end_date = this.timeData[1]
+        if (this.timeData !== null) {
+          paramsData.start_date = this.timeData[0]
+          paramsData.end_date = this.timeData[1]
+        }
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
           this.tableData = res.data.records
@@ -360,6 +401,15 @@ export default {
         }
       } catch (error) {
         console.log(error)
+      }
+    },
+    // 获取领导数据
+    async getLdList() {
+      const res = await getDicGroupBy()
+      if (res.code === 1) {
+        this.Ldlist = res.data
+      } else {
+        this.$message('获取领导数据失败')
       }
     },
     // 日志按钮
@@ -374,11 +424,24 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const state = this.add(this.ruleForm)
-          if (state) {
-            Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
-            this.ruleForm.serial_num = getProjectNum()
-            this.search()
+          this.ruleForm.creat_date = dayjs(this.ruleForm.creat_date).format('YYYY-MM-DD HH:mm:ss')
+          if (this.ruleForm.sclds.length > 0) {
+            this.ruleForm.sclds.forEach(e => {
+              e.instructions_data = dayjs(e.instructions_data).format('YYYY-MM-DD HH:mm:ss')
+            })
+          }
+          if (this.bjsj.comment) {
+            const obj = this.bjsj
+            obj.conclude_data = dayjs(obj.conclude_data).format('YYYY-MM-DD HH:mm:ss')
+            this.ruleForm.accomPlishes.push(obj)
+          }
+          switch (this.BtnType) {
+            case 'Add':
+              this.add(this.ruleForm)
+              break
+            case 'Modify':
+              this.Modify(this.ruleForm)
+              break
           }
         } else {
           console.log('error submit!!')
@@ -392,9 +455,89 @@ export default {
         const res = await Add({ ...data })
         if (res.code === 1) {
           this.$message.success(res.message)
-          return true
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          this.search()
         } else {
           // this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 调取修改接口的方法
+    async Modify(data) {
+      try {
+        const obj = {}
+        obj.beforeDataChange = this.OldData
+        obj.AfterDataChange = data
+        const res = await ModifyApi(data.id, obj)
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          this.search()
+        } else {
+          // this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格删除按钮
+    tabeleDel(row) {
+      this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        // eslint-disable-next-line space-before-function-paren
+        .then(async () => {
+          const res = await Del({ id: row.id })
+          if (res.code === 1) {
+            this.$message.success(res.message)
+            this.search()
+          } else {
+            // this.$message.error(res.message)
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 表格查看按钮
+    async tableView(row) {
+      try {
+        this.disabled = true
+        const res = await searchOne({ id: row.id })
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          this.BtnType = 'View'
+          this.ruleForm = res.data
+          this.bjsj = this.ruleForm.accomPlishes[0]
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格修改按钮
+    async tableModify(row) {
+      try {
+        this.disabled = false
+        const res = await searchOne({ id: row.id })
+        if (res.code === 1) {
+          this.BtnType = 'Modify'
+          this.OldData = JSON.parse(JSON.stringify(res.data))
+          if (res.data.sclds === null) {
+            res.data.sclds = []
+          }
+          if (res.data.accomPlishes !== null && res.data.accomPlishes.length > 0) {
+            this.bjsj = res.data.accomPlishes[0]
+          } else {
+            res.data.accomPlishes = []
+          }
+          this.ruleForm = res.data
         }
       } catch (error) {
         console.log(error)
@@ -414,6 +557,23 @@ export default {
       this.currentPage = val
       this.search()
     },
+    // 点击领导名字增加批示框
+    addDomain(data) {
+      this.ruleForm.sclds.push({
+        _id: getProjectNum(),
+        approved_by: data.name,
+        instructions_data: new Date(),
+        content: '',
+        read_circle: false
+      })
+      console.log(this.ruleForm)
+    },
+    // 批示框里删除按钮
+    delInstructions(index) {
+      if (index !== -1) {
+        this.ruleForm.sclds.splice(index, 1)
+      }
+    },
     // 表格中操作>签收事件
     signForevent(row) {
       // this.sigDialogVisible = true
@@ -426,20 +586,6 @@ export default {
     // 组件传参->接收参数 关闭日志
     SetClose(data) {
       this.logDialogVisible = data
-    },
-    // 点击领导名字增加批示框
-    addDomain() {
-      this.InstructionBox.push({
-        InstructionsForm: {
-          name: ''
-        }
-      })
-    },
-    // 批示框里删除按钮
-    delInstructions(index) {
-      if (index !== -1) {
-        this.InstructionBox.splice(index, 1)
-      }
     },
     // 上传列表删除
     handleRemove(file, fileList) {
@@ -456,14 +602,7 @@ export default {
     },
     // 下载附件按钮
     downTemplate() {},
-    // 表格删除按钮
-    tabeleDel(index) {
-      this.tableData.splice(index, 1)
-    },
-    // 表格查看按钮
-    tableView(row) {
-      console.log(row)
-    },
+
     // 表格选择项发生变化时
     handleSelectionChange(val) {
       console.log(val)
@@ -504,7 +643,7 @@ export default {
   margin-bottom: 15px;
 }
 .Children {
-  width: 70%;
+  width: 80%;
   margin: 0 auto;
   margin-bottom: 15px;
 }
@@ -545,5 +684,8 @@ export default {
 }
 .span_color {
   margin-right: 0.625rem;
+}
+.ml_15 {
+  margin-left: 0.625rem;
 }
 </style>
