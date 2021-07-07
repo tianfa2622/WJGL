@@ -26,7 +26,7 @@
         <el-card class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>基本信息</span>
-            <el-button style="float: right;" type="primary" :disabled="disabled" @click="submitForm('ruleForm')">提交</el-button>
+            <el-button v-if="BtnType !== 'View'" style="float: right;" type="primary" @click="submitForm('ruleForm')">提交</el-button>
             <!-- <el-button
               @click="resetForm('ruleForm')"
               style="float: right; padding: 3px 10px"
@@ -116,7 +116,7 @@
           <el-row>
             <el-col :span="4" style="text-align:center"><div style="padding:10px 0;">领导批示：</div></el-col>
             <el-col :span="18">
-              <el-button v-for="(ld, index) in Ldlist" :key="index" plain class="leadershipBtn" @click="addDomain(ld)">
+              <el-button v-for="(ld, index) in Ldlist" :key="index" plain class="leadershipBtn" :disabled="disabled" @click="addDomain(ld)">
                 {{ ld.name }}
               </el-button>
             </el-col>
@@ -136,7 +136,7 @@
                         </el-col>
                         <el-col :span="16">
                           <el-form-item label="批示时间：">
-                            <el-date-picker v-model="item.instructions_data" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                            <el-date-picker v-model="item.instructions_data" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
                             <el-button style="margin-left:10px" @click="item.read_circle = true">{{ item.read_circle === true ? '已圈阅' : '圈阅' }}</el-button>
                           </el-form-item>
                         </el-col>
@@ -277,7 +277,6 @@
 import SignFordialog from './Dialog/signFordialog'
 import LogDialog from './LogDialog/instructionsDialog'
 import { getProjectNum } from '@/utils/comm'
-// eslint-disable-next-line no-unused-vars
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/RegularFiles/instructions'
 import { validatePhoneTwo, validateContacts } from '@/utils/verification'
 import dayjs from 'dayjs'
@@ -338,12 +337,12 @@ export default {
       Ldlist: [],
       sigDialogVisible: false,
       logDialogVisible: false, // 显示日志弹出框
-      // 批示数据
-      InstructionBox: [],
-      // 办结数据
-      FinishForm: {
-        name: ''
-      },
+      // // 批示数据
+      // InstructionBox: [],
+      // // 办结数据
+      // FinishForm: {
+      //   name: ''
+      // },
       // 上传文件列表
       fileList: [],
       // 表格选择项
@@ -363,7 +362,8 @@ export default {
       bjsj: {
         conclude_data: new Date(),
         accom: false,
-        _id: getProjectNum()
+        _id: getProjectNum(),
+        comment: null
       },
       disabled: false,
       BtnType: 'Add',
@@ -456,6 +456,8 @@ export default {
         if (res.code === 1) {
           this.$message.success(res.message)
           Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          this.BtnType = 'Add'
           this.search()
         } else {
           // this.$message.error(res.message)
@@ -474,6 +476,8 @@ export default {
         if (res.code === 1) {
           this.$message.success(res.message)
           Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          this.BtnType = 'Add'
           this.search()
         } else {
           // this.$message.error(res.message)
@@ -509,9 +513,9 @@ export default {
     // 表格查看按钮
     async tableView(row) {
       try {
-        this.disabled = true
         const res = await searchOne({ id: row.id })
         if (res.code === 1) {
+          this.disabled = true
           this.$message.success(res.message)
           this.BtnType = 'View'
           this.ruleForm = res.data
@@ -524,9 +528,9 @@ export default {
     // 表格修改按钮
     async tableModify(row) {
       try {
-        this.disabled = false
         const res = await searchOne({ id: row.id })
         if (res.code === 1) {
+          this.disabled = false
           this.BtnType = 'Modify'
           this.OldData = JSON.parse(JSON.stringify(res.data))
           if (res.data.sclds === null) {
@@ -542,10 +546,6 @@ export default {
       } catch (error) {
         console.log(error)
       }
-    },
-    // 重置事件
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
     },
     // 切换每页条数
     handleSizeChange(val) {
