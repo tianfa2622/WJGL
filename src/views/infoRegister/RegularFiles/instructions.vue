@@ -559,14 +559,33 @@ export default {
     },
     // 点击领导名字增加批示框
     addDomain(data) {
-      this.ruleForm.sclds.push({
-        _id: getProjectNum(),
-        approved_by: data.name,
-        instructions_data: new Date(),
-        content: '',
-        read_circle: false
-      })
-      console.log(this.ruleForm)
+      if (this.ruleForm.sclds !== []) {
+        let XTnum = 0
+        this.ruleForm.sclds.forEach(e => {
+          if (data.name === e.approved_by) {
+            XTnum += 1
+          }
+        })
+        if (XTnum > 2) {
+          this.$message.error('领导最多可批示3次！')
+        } else {
+          this.ruleForm.sclds.push({
+            _id: getProjectNum(),
+            approved_by: data.name,
+            instructions_data: new Date(),
+            content: '',
+            read_circle: false
+          })
+        }
+      } else {
+        this.ruleForm.sclds.push({
+          _id: getProjectNum(),
+          approved_by: data.name,
+          instructions_data: new Date(),
+          content: '',
+          read_circle: false
+        })
+      }
     },
     // 批示框里删除按钮
     delInstructions(index) {

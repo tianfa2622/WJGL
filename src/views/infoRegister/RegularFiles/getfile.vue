@@ -299,8 +299,8 @@
           <el-table-column label="登记人" prop="registrant" align="center" :resizable="false"> </el-table-column>
           <el-table-column label="文件状态" prop="file_status" align="center" :resizable="false">
             <template slot-scope="scope">
-              <span v-if="scope.row.file_status === 1">签收</span>
-              <span v-if="scope.row.file_status === 0">已签收</span>
+              <span v-if="scope.row.file_status === 1">未办结</span>
+              <span v-if="scope.row.file_status === 0">已办结</span>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" :resizable="false">
@@ -323,25 +323,25 @@
     <el-dialog title="选择人员" :visible.sync="dialogFormVisible" center :close-on-click-modal="false">
       <el-form :model="dialogData" :inline="true">
         <el-form-item>
-          <el-input v-model="dialogData.name" placeholder="请输入单位名称"></el-input>
+          <el-input v-model="dialogData.organization" placeholder="请输入单位名称"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="dialogData.name" placeholder="请输入单位姓名"></el-input>
+          <el-input v-model="dialogData.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-input v-model.number="dialogData.name" placeholder="请输入手机号"></el-input>
+          <el-input v-model.number="dialogData.phone" placeholder="请输入手机号"></el-input>
         </el-form-item>
         <el-form-item>
-          <!-- <el-button type="primary" @click="searchPersonnel">搜索</el-button> -->
+          <el-button type="primary" @click="searchPersonnelInfo(dialogData)">搜索</el-button>
         </el-form-item>
       </el-form>
       <div style="margin-top:10px">
-        <el-table :data="dialogTableData" border style="width: 100%" @selection-change="dialogSelectionChange">
+        <el-table ref="moviesTable" :data="dialogTableData" border style="width: 100%" height="500" @selection-change="dialogSelectionChange">
           <el-table-column label="全选" type="selection" width="50px" :resizable="false"></el-table-column>
-          <el-table-column prop="name" type="index" label="序号" width="50" :resizable="false"> </el-table-column>
+          <el-table-column type="index" label="序号" width="50" :resizable="false"> </el-table-column>
           <el-table-column prop="name" label="姓名" :resizable="false"> </el-table-column>
-          <el-table-column prop="name" label="单位" :resizable="false"> </el-table-column>
-          <el-table-column prop="name" label="手机号" :resizable="false"> </el-table-column>
+          <el-table-column prop="organization" label="单位" :resizable="false"> </el-table-column>
+          <el-table-column prop="phone" label="手机号" :resizable="false"> </el-table-column>
           <el-table-column label="操作" width="60" :resizable="false">
             <template slot-scope="scope">
               <el-link type="primary" @click="choose(scope.row)">选择</el-link>
@@ -349,6 +349,7 @@
           </el-table-column>
         </el-table>
       </div>
+      <el-pagination :current-page="currentPage1" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize1" layout="total, sizes, prev, pager, next, jumper" :total="total1" @size-change="handleSizeChange1" @current-change="handleCurrentChange1"> </el-pagination>
       <div slot="footer">
         <el-button type="primary" @click="close">关 闭</el-button>
         <!-- <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button> -->
@@ -384,7 +385,7 @@ export default {
         reference_num: null,
         phone: null,
         number: 1,
-        jeremy_unit: null,
+        // jeremy_unit: null,
         creat_date: new Date(),
         sclds: [],
         accomPlishes: [],
@@ -414,8 +415,8 @@ export default {
       },
       // options: [],
       blqkSelect: [
-        { label: '未审核', value: 1 },
-        { label: '已审核', value: 0 }
+        { label: '未办结', value: 1 },
+        { label: '已办结', value: 0 }
       ],
       // 搜索框数据
       conditionInputs: {},
@@ -451,7 +452,7 @@ export default {
       // 推送模块表格数据
       personnelTableData: [],
       // 选择人员弹出层搜索数据
-      dialogData: { name: '' },
+      dialogData: {},
       // 选择人员弹出层表格数据项
       dialogTableData: [{ name: '123' }],
       // 选择人员弹出层表格选择项
@@ -478,7 +479,14 @@ export default {
       },
       disabled: false,
       BtnType: 'Add',
-      OldData: {}
+      OldData: {},
+      currentPage1: 1,
+      // 选择人员当前展示条数
+      pageSize1: 10,
+      // 选择人员总数
+      total1: 20,
+      // 暂时有问题
+      cid: 2
     }
   },
   created() {
@@ -612,7 +620,7 @@ export default {
         .then(async () => {
           const res = await Del({ id: row.id })
           if (res.code === 1) {
-            this.$message.success(res.message)
+            this.$message.success(res.data)
             this.search()
           } else {
             // this.$message.error(res.message)
@@ -637,14 +645,33 @@ export default {
     },
     // 点击领导名字增加批示框
     addDomain(data) {
-      this.ruleForm.sclds.push({
-        _id: getProjectNum(),
-        approved_by: data.name,
-        instructions_data: new Date(),
-        content: '',
-        read_circle: false
-      })
-      console.log(this.ruleForm)
+      if (this.ruleForm.sclds !== []) {
+        let XTnum = 0
+        this.ruleForm.sclds.forEach(e => {
+          if (data.name === e.approved_by) {
+            XTnum += 1
+          }
+        })
+        if (XTnum > 2) {
+          this.$message.error('领导最多可批示3次！')
+        } else {
+          this.ruleForm.sclds.push({
+            _id: getProjectNum(),
+            approved_by: data.name,
+            instructions_data: new Date(),
+            content: '',
+            read_circle: false
+          })
+        }
+      } else {
+        this.ruleForm.sclds.push({
+          _id: getProjectNum(),
+          approved_by: data.name,
+          instructions_data: new Date(),
+          content: '',
+          read_circle: false
+        })
+      }
     },
     // 批示框里删除按钮
     delInstructions(index) {
@@ -695,6 +722,46 @@ export default {
         // console.log(error)
       }
     },
+    // 推送模块选择人员按钮
+    selectPersonnel() {
+      this.dialogFormVisible = true
+      this.searchPersonnelInfo()
+    },
+    // 选择人员弹出层搜索按钮
+    async searchPersonnelInfo(data) {
+      try {
+        const page = {}
+        page.current = this.currentPage1
+        page.size = this.pageSize1
+        page.id = this.cid // 有问题，数据定死
+        const res = await searchCanPush({ ...page, ...data })
+        if (res.code === 1) {
+          if (data) this.$message.success(res.message)
+          if (res.data === null) {
+            this.dialogTableData = res.data
+            this.total1 = 0
+          } else {
+            this.dialogTableData = res.data.records
+            this.total1 = res.data.total
+          }
+          this.currentPage1 = 1
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 选择人员切换每页条数
+    handleSizeChange1(val) {
+      this.pageSize = val
+      this.searchPersonnelInfo()
+    },
+    // 选择人员切换当前页码
+    handleCurrentChange1(val) {
+      this.currentPage = val
+      this.searchPersonnelInfo()
+    },
     // 日志按钮
     LogBtn() {
       this.logDialogVisible = true
@@ -731,23 +798,6 @@ export default {
       console.log(val)
       this.multipleSelection = val
     },
-    // 推送模块选择人员按钮
-    selectPersonnel() {
-      this.dialogFormVisible = true
-      this.searchPersonnelInfo()
-    },
-    // 选择人员弹出层搜索按钮
-    async searchPersonnelInfo() {
-      try {
-        const res = await searchCanPush()
-        if (res.code === 1) {
-          this.$message.success('cg')
-          this.dialogData = res.data
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    },
     // 选择人员弹出层表格选择项发生变化时
     dialogSelectionChange(val) {
       console.log(val)
@@ -756,13 +806,14 @@ export default {
     // 选择人员弹出层表格选择按钮
     choose(row) {
       console.log(row)
+      this.$refs.moviesTable.toggleRowSelection(row)
     },
     // 选择人员弹出层关闭按钮
     close() {
+      this.dialogFormVisible = false
       this.dialogData = {}
       this.multipleSelection = []
       this.dialogTableData = []
-      this.dialogFormVisible = false
     }
   }
 }

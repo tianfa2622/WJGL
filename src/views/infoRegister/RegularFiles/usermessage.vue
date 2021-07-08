@@ -34,69 +34,66 @@
         <el-card class="box-card  Children">
           <div slot="header" class="clearfix">
             <span>基本信息</span>
-            <el-button style="float: right;" type="primary" @click="submitForm('ruleForm')">提交</el-button>
+            <el-button v-if="BtnType !== 'View'" style="float: right;" type="primary" @click="submitForm('ruleForm')">提交</el-button>
             <!-- <el-button style="float: right; padding: 3px 10px" type="text" @click="resetForm('ruleForm')">重置</el-button> -->
           </div>
-          <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="125px" class="demo-ruleForm">
+          <el-form ref="ruleForm" :disabled="disabled" :model="ruleForm" :rules="rules" label-width="125px" class="demo-ruleForm">
             <el-row>
               <el-col :span="12">
-                <el-form-item label="流水号：" prop="name">
-                  <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                  <span>{{ ruleForm.name ? ruleForm.name : 2100082 }}</span>
+                <el-form-item label="流水号：" required>
+                  <span>{{ ruleForm.serial_num }}</span>
                 </el-form-item>
               </el-col>
 
               <el-col :span="12">
-                <el-form-item label="来信人：" prop="name">
-                  <el-input v-model="ruleForm.name" placeholder="请输入来信人"></el-input>
+                <el-form-item label="来信人：" prop="letter_name">
+                  <el-input v-model="ruleForm.letter_name" placeholder="请输入来信人"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="来信时间：" prop="name">
-                  <el-date-picker v-model="ruleForm.name" type="date" style="width:100%" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
+                <el-form-item label="来信时间：">
+                  <el-date-picker v-model="ruleForm.letter_time" type="datetime" style="width:100%" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="收件人：" prop="name">
-                  <el-input v-model="ruleForm.name" placeholder="请输入联系人"></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <el-form-item label="来文内容：" prop="name" required>
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="来信地址：" prop="name">
-                  <el-input v-model="ruleForm.name" placeholder="请输入来信地址"></el-input>
-                </el-form-item>
-                <el-form-item label="办理单位：" prop="name">
-                  <el-input v-model="ruleForm.name" placeholder="请输入办理单位"></el-input>
+                <el-form-item label="收件人：" prop="addressee">
+                  <el-input v-model="ruleForm.addressee" placeholder="请输入收件人"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="备注：" prop="name">
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+                <el-form-item label="来信内容：" prop="letter_content">
+                  <el-input v-model="ruleForm.letter_content" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="来信地址：">
+                  <el-input v-model="ruleForm.letter_address" placeholder="请输入来信地址"></el-input>
+                </el-form-item>
+                <el-form-item label="办理单位：">
+                  <el-input v-model="ruleForm.banli_company" placeholder="请输入办理单位"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="备注：">
+                  <el-input v-model="ruleForm.comment" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-row>
                   <el-col :span="12">
                     <el-form-item label="登记人：">
-                      <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                      <span>{{ ruleForm.name ? ruleForm.name : '王湘琴' }}</span>
+                      <span>{{ ruleForm.registrant }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item label="登记单位：">
-                      <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                      <span>{{ ruleForm.name ? ruleForm.name : '厅长秘书处' }}</span>
+                      <span>{{ ruleForm.registrant_company }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -112,35 +109,39 @@
 
           <el-row>
             <el-col :span="4" style="text-align:center"><div style="padding:15px 0;">领导批示：</div></el-col>
-            <el-col :span="18"><el-button v-for="o in 12" :key="o" plain class="leadershipBtn" @click="addDomain">徐显辉</el-button></el-col>
+            <el-col :span="18">
+              <el-button v-for="(ld, index) in Ldlist" :key="index" plain class="leadershipBtn" :disabled="disabled" @click="addDomain(ld)">
+                {{ ld.name }}
+              </el-button>
+            </el-col>
           </el-row>
 
           <el-row type="flex" justify="center" style="margin-top:20px">
             <el-col :span="22">
-              <el-card v-for="(item, index) in InstructionBox" :key="index" class="box-card">
+              <el-card v-for="(item, index) in ruleForm.sclds" :key="index" class="box-card">
                 <el-row type="flex" justify="space-between" align="middle">
                   <el-col :span="20">
-                    <el-form ref="InstructionsForm" :model="item.InstructionsForm" label-width="90px" class="demo-dynamic">
+                    <el-form ref="InstructionsForm" :model="item.InstructionsForm" :disabled="disabled === true ? disabled : item.read_circle" label-width="90px" class="demo-dynamic">
                       <el-row>
                         <el-col :span="8">
                           <el-form-item label="批示人：">
-                            <span>{{ item.InstructionsForm.name ? item.InstructionsForm.name : '徐显辉' }}</span>
+                            <span>{{ item.approved_by }}</span>
                           </el-form-item>
                         </el-col>
                         <el-col :span="16">
                           <el-form-item label="批示时间：">
-                            <el-date-picker v-model="item.InstructionsForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                            <el-button style="margin-left:10px">圈阅</el-button>
+                            <el-date-picker v-model="item.instructions_data" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                            <el-button style="margin-left:10px" @click="item.read_circle = true">{{ item.read_circle === true ? '已圈阅' : '圈阅' }}</el-button>
                           </el-form-item>
                         </el-col>
                       </el-row>
                       <el-form-item label="批示内容：">
-                        <el-input v-model="item.InstructionsForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                        <el-input v-model="item.content" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                       </el-form-item>
                     </el-form>
                   </el-col>
                   <el-col :span="3">
-                    <el-button type="danger" class="delete_btn_class" @click="delInstructions(index)">删 除</el-button>
+                    <el-button type="danger" class="delete_btn_class" :disabled="disabled" @click="delInstructions(index)">删 除</el-button>
                   </el-col>
                 </el-row>
               </el-card>
@@ -153,16 +154,16 @@
             <span>办结</span>
           </div>
           <el-row type="flex" justify="center">
-            <el-form ref="FinishForm" :model="FinishForm" label-width="90px" class="demo-dynamic">
+            <el-form ref="FinishForm" :model="bjsj" :disabled="disabled === true ? disabled : bjsj.accom" label-width="90px" class="demo-dynamic">
               <el-col :span="18">
                 <el-form-item label="办结时间：">
-                  <el-date-picker v-model="FinishForm.name" type="date" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                  <el-button style="margin-left:30px" type="primary">办结</el-button>
+                  <el-date-picker v-model="bjsj.conclude_data" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                  <el-button style="margin-left:30px" type="primary" @click="bjsj.accom = true">{{ bjsj.accom === true ? '已办结' : '办结' }}</el-button>
                 </el-form-item>
               </el-col>
               <el-col :span="18">
                 <el-form-item label="备注：">
-                  <el-input v-model="FinishForm.name" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                  <el-input v-model="bjsj.comment" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
             </el-form>
@@ -193,83 +194,90 @@
           </el-row>
         </el-card>
         <!-- 推送 -->
-        <el-card v-if="$store.state.code == 1" class="box-card  Children">
-          <div slot="header" class="clearfix">
-            <span>推送</span>
-          </div>
-          <div class="table">
-            <div style="margin-bottom:10px">
-              <el-button @click="selectPersonnel">选择人员</el-button>
+        <template v-if="BtnType !== 'Add'">
+          <el-card v-if="$store.state.code == 1" class="box-card  Children">
+            <div slot="header" class="clearfix">
+              <span>推送</span>
             </div>
-            <div class="table_content">
-              <el-table :data="personnelTableData" border style="width: 100%">
-                <el-table-column prop="name" type="index" label="序号" width="50" header-align="center" :resizable="false"> </el-table-column>
-                <el-table-column prop="name" label="姓名" :resizable="false" header-align="center"> </el-table-column>
-                <el-table-column prop="name" label="手机号" :resizable="false" header-align="center"> </el-table-column>
-                <el-table-column prop="name" label="单位" :resizable="false" header-align="center"> </el-table-column>
-                <el-table-column prop="name" label="反馈信息" :resizable="false" header-align="center"> </el-table-column>
-                <el-table-column prop="name" label="状态" :resizable="false" header-align="center">
-                  <template slot-scope="scope">
-                    <span v-if="scope.row.name === 0">签收</span>
-                    <span v-if="scope.row.name === 1">已签收</span>
-                    <!-- <el-button v-else size="mini" @click="signForevent(scope.row)">签收</el-button> -->
-                    <span v-else>{{ scope.row.wjlx }}</span>
-                  </template>
-                </el-table-column>
-              </el-table>
+            <div class="table">
+              <div style="margin-bottom:10px">
+                <el-button :disabled="disabled" @click="selectPersonnel">选择人员</el-button>
+              </div>
+              <div class="table_content">
+                <el-table :data="personnelTableData" border style="width: 100%">
+                  <el-table-column type="index" label="序号" width="50" align="center" :resizable="false"> </el-table-column>
+                  <el-table-column prop="name" label="姓名" :resizable="false" align="center"> </el-table-column>
+                  <el-table-column prop="phone" label="手机号" :resizable="false" align="center"> </el-table-column>
+                  <el-table-column prop="organization" label="单位" :resizable="false" align="center"> </el-table-column>
+                  <el-table-column prop="feedbackMessage" label="反馈信息" :resizable="false" align="center"> </el-table-column>
+                  <el-table-column prop="fileStatus" label="状态" :resizable="false" align="center">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.fileStatus === '0'">签收</span>
+                      <span v-if="scope.row.fileStatus === '1'">已签收</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </div>
+              <!-- <div v-if="personnelTableData.length">
+                <el-pagination :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="50" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+              </div> -->
             </div>
-            <div v-if="personnelTableData.length">
-              <el-pagination :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="50" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
-            </div>
-          </div>
-        </el-card>
+          </el-card>
+        </template>
       </el-card>
 
       <el-card class="box-card">
-        <div class="condition">
-          <div class="condition-col"><span style="margin-left:15px"></span>流水号:<el-input v-model="conditionInputs.lsh" placeholder="请输入内容" clearable> </el-input></div>
-          <div class="condition-col">来文内容:<el-input v-model="conditionInputs.lwnr" placeholder="请输入内容" clearable> </el-input></div>
-          <div class="condition-col">
-            收文时间:<el-date-picker v-model="conditionInputs.lwsj1" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>-
-            <el-date-picker v-model="conditionInputs.lwsj2" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-          </div>
-          <div class="condition-col">
-            办理情况:<el-select v-model="conditionInputs.blqk" clearable placeholder="请选择">
+        <el-row type="flex" justify="space-around" class="search_box">
+          <el-col :span="7">
+            <span class="span_color" style="margin-left:15px">流水号:</span>
+            <el-input v-model="conditionInputs.serial_num" style="width:70%" placeholder="请输入内容" clearable> </el-input>
+          </el-col>
+          <el-col :span="7">
+            <span class="span_color">来文内容:</span>
+            <el-input v-model="conditionInputs.content" style="width:70%" placeholder="请输入内容" clearable> </el-input>
+          </el-col>
+          <el-col :span="7">
+            <span class="span_color">办理情况:</span>
+            <el-select v-model="conditionInputs.banli" style="width:70%" clearable placeholder="请选择">
               <el-option v-for="item in blqkSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select>
-          </div>
-          <div class="condition-col">
-            <el-button @click="search">查询</el-button>
-          </div>
-        </div>
-        <el-table :data="tableData" border style="width: 100%;height:500px;" @selection-change="handleSelectionChange">
+          </el-col>
+          <el-col :span="16" style="margin-top:15px">
+            <span class="span_color">收文时间:</span>
+            <el-date-picker v-model="timeData" type="daterange" range-separator="-" value-format="yyyy-MM-dd HH:mm:ss" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
+          </el-col>
+          <el-col :span="6" style="margin-top:15px;text-align:center">
+            <el-button style="width:150px" @click="search(conditionInputs)">查询</el-button>
+          </el-col>
+        </el-row>
+        <el-table :data="tableData" border style="width: 100%" height="500" @selection-change="handleSelectionChange">
           <el-table-column label="全选" type="selection" width="50px" :resizable="false"></el-table-column>
           <el-table-column label="序号" type="index" width="50px" align="center" :resizable="false"></el-table-column>
-          <el-table-column label="文件类型" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="流水号" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="来信时间" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="收件人" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="来信人" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="来信地址" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="来信内容" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="办理单位" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="登记人" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-          <el-table-column label="文件状态" prop="wjlx" align="center" :resizable="false">
+          <el-table-column label="文件类型" prop="file_type" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="流水号" prop="serial_num" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="来信时间" prop="letter_time" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="收件人" prop="addressee" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="来信人" prop="letter_name" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="来信地址" prop="letter_address" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="来信内容" prop="letter_content" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="办理单位" prop="banli_company" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="登记人" prop="registrant" align="center" :resizable="false"> </el-table-column>
+          <el-table-column label="文件状态" prop="file_status" align="center" :resizable="false">
             <template slot-scope="scope">
-              <span v-if="scope.row.wjlx === 0">签收</span>
-              <span v-if="scope.row.wjlx === 1">已签收</span>
-              <!-- <el-button v-else size="mini" @click="signForevent(scope.row)">签收</el-button> -->
+              <span v-if="scope.row.file_status === 0">签收</span>
+              <span v-if="scope.row.file_status === 1">已签收</span>
               <span v-else>{{ scope.row.wjlx }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="center" :resizable="false">
+          <el-table-column label="操作" align="center" :resizable="false">
             <template slot-scope="scope">
               <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
-              <el-link type="danger" style="margin-left:10px" @click="tabeleDel(scope.$index)">删除</el-link>
+              <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link>
+              <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="50" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+        <el-pagination :current-page="currentPage" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
       </el-card>
     </div>
 
@@ -281,25 +289,25 @@
     <el-dialog title="选择人员" :visible.sync="dialogFormVisible" center :close-on-click-modal="false">
       <el-form :model="dialogData" :inline="true">
         <el-form-item>
-          <el-input v-model="dialogData.name" placeholder="请输入单位名称"></el-input>
+          <el-input v-model="dialogData.organization" placeholder="请输入单位名称"></el-input>
         </el-form-item>
         <el-form-item>
           <el-input v-model="dialogData.name" placeholder="请输入单位姓名"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-input v-model.number="dialogData.name" placeholder="请输入手机号"></el-input>
+          <el-input v-model.number="dialogData.phone" placeholder="请输入手机号"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="searchPersonnel">搜索</el-button>
+          <el-button type="primary" @click="searchPersonnelInfo(dialogData)">搜索</el-button>
         </el-form-item>
       </el-form>
       <div style="margin-top:10px">
-        <el-table :data="dialogTableData" border style="width: 100%" @selection-change="dialogSelectionChange">
+        <el-table ref="moviesTable" :data="dialogTableData" border style="width: 100%" height="500" @selection-change="dialogSelectionChange">
           <el-table-column label="全选" type="selection" width="50px" :resizable="false"></el-table-column>
-          <el-table-column prop="name" type="index" label="序号" width="50" :resizable="false"> </el-table-column>
+          <el-table-column type="index" label="序号" width="50" :resizable="false"> </el-table-column>
           <el-table-column prop="name" label="姓名" :resizable="false"> </el-table-column>
-          <el-table-column prop="name" label="单位" :resizable="false"> </el-table-column>
-          <el-table-column prop="name" label="手机号" :resizable="false"> </el-table-column>
+          <el-table-column prop="organization" label="单位" :resizable="false"> </el-table-column>
+          <el-table-column prop="phone" label="手机号" :resizable="false"> </el-table-column>
           <el-table-column label="操作" width="60" :resizable="false">
             <template slot-scope="scope">
               <el-link type="primary" @click="choose(scope.row)">选择</el-link>
@@ -307,6 +315,7 @@
           </el-table-column>
         </el-table>
       </div>
+      <el-pagination :current-page="currentPage1" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize1" layout="total, sizes, prev, pager, next, jumper" :total="total1" @size-change="handleSizeChange1" @current-change="handleCurrentChange1"> </el-pagination>
       <div slot="footer">
         <el-button type="primary" @click="close">关 闭</el-button>
         <!-- <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button> -->
@@ -318,6 +327,10 @@
 <script>
 import SignFordialog from './Dialog/usersignFordialog'
 import LogDialog from './LogDialog/usermessageDialog'
+import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/RegularFiles/usermessage'
+// import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
+import { getProjectNum } from '@/utils/comm'
+import dayjs from 'dayjs'
 export default {
   components: {
     // 扫码签收
@@ -328,26 +341,40 @@ export default {
   data() {
     return {
       ruleForm: {
-        name: ''
+        serial_num: getProjectNum(),
+        registrant: '王湘琴',
+        registrant_company: '厅长秘书处',
+        letter_time: new Date(),
+        letter_name: null,
+        addressee: null,
+        banli_company: null,
+        letter_address: null,
+        letter_content: null,
+        comment: null,
+        sclds: [],
+        accomPlishes: []
       },
       rules: {
-        name: [{ required: true, message: '请输入流水号', trigger: 'blur' }]
+        addressee: [{ required: true, message: '请输入收件人', trigger: 'blur' }],
+        letter_name: [{ required: true, message: '请输入来信人', trigger: 'blur' }],
+        letter_content: [{ required: true, message: '请输入来信内容', trigger: 'blur' }]
       },
       options: [],
-      blqkSelect: [],
-      conditionInputs: {
-        lsh: '',
-        lwnr: '',
-        lwsj1: '',
-        lwsj2: '',
-        blqk: ''
-      },
-      tableData: [
-        {
-          wjlx: '上级来文'
-        }
+      blqkSelect: [
+        { label: '未办结', value: 1 },
+        { label: '已办结', value: 0 }
       ],
-      currentPage4: 1,
+      conditionInputs: {},
+      timeData: [],
+      tableData: [],
+      // 当前页面
+      currentPage: 1,
+      // 当前展示条数
+      pageSize: 10,
+      // 总数
+      total: 20,
+      // 领导数据
+      Ldlist: [],
       sigDialogVisible: false,
       sjlwsl: 0,
       logDialogVisible: false, // 显示日志弹出框
@@ -370,18 +397,317 @@ export default {
       // 推送模块表格数据
       personnelTableData: [],
       // 选择人员弹出层搜索数据
-      dialogData: { name: '' },
+      dialogData: {},
       // 选择人员弹出层表格数据项
       dialogTableData: [{ name: '123' }],
       // 选择人员弹出层表格选择项
       Selection: [],
       // 是否显示弹出层
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      // 文件类型
+      wj_Type: [
+        { value: 1, label: '呈批件' },
+        { value: 2, label: '上级来文' },
+        { value: 3, label: '平级和下级来文' },
+        { value: 4, label: '群众来信' },
+        { value: 5, label: '其他' },
+        { value: 7, label: '上级督办件' },
+        { value: 8, label: '厅批督办件' },
+        { value: 9, label: '政协提案' },
+        { value: 10, label: '人大建议' }
+      ],
+      bjsj: {
+        conclude_data: new Date(),
+        accom: false,
+        _id: getProjectNum(),
+        comment: null
+      },
+      disabled: false,
+      BtnType: 'Add',
+      OldData: {},
+      currentPage1: 1,
+      // 选择人员当前展示条数
+      pageSize1: 10,
+      // 选择人员总数
+      total1: 20,
+      // 暂时有问题
+      cid: 2
     }
+  },
+  created() {
+    this.search()
+    this.getLdList()
   },
   methods: {
     // 搜索按钮
-    search() {},
+    async search(data) {
+      try {
+        const pageData = {}
+        let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+        }
+        pageData.pageIndex = this.currentPage
+        pageData.pageSize = this.pageSize
+        paramsData = { ...data }
+        if (this.timeData !== null) {
+          paramsData.start_date = this.timeData[0]
+          paramsData.end_date = this.timeData[1]
+        }
+        const res = await searchAll({ ...pageData, ...paramsData })
+        if (res.code === 1) {
+          this.tableData = res.data.records
+          this.total = res.data.total
+          paramsData = {}
+          if (data) {
+            this.$message.success(res.message)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 获取领导数据
+    async getLdList() {
+      const res = await getDicGroupBy()
+      if (res.code === 1) {
+        this.Ldlist = res.data
+      } else {
+        this.$message('获取领导数据失败')
+      }
+    },
+    // 调取添加接口的方法
+    async add(data) {
+      try {
+        const res = await Add({ ...data })
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          this.BtnType = 'Add'
+          this.search()
+        } else {
+          // this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 调取修改接口的方法
+    async Modify(data) {
+      try {
+        const obj = {}
+        obj.beforeDataChange = this.OldData
+        obj.AfterDataChange = data
+        const res = await ModifyApi(data.id, obj)
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          this.search()
+          this.BtnType = 'Add'
+        } else {
+          // this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格查看按钮
+    async tableView(row) {
+      try {
+        const res = await searchOne({ id: row.id })
+        if (res.code === 1) {
+          this.disabled = true
+          this.searchAlreadyPushInfo({ id: 1 })
+          this.$message.success(res.message)
+          this.BtnType = 'View'
+          this.ruleForm = res.data
+          if (this.ruleForm.accomPlishes !== null) {
+            this.bjsj = this.ruleForm.accomPlishes[0]
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格修改按钮
+    async tableModify(row) {
+      try {
+        const res = await searchOne({ id: row.id })
+        console.log(1)
+        if (res.code === 1) {
+          this.BtnType = 'Modify'
+          this.disabled = false
+          this.searchAlreadyPushInfo({ id: 1 })
+          console.log(2)
+          this.OldData = JSON.parse(JSON.stringify(res.data))
+          if (res.data.sclds === null) {
+            res.data.sclds = []
+          }
+          if (res.data.accomPlishes !== null && res.data.accomPlishes.length > 0) {
+            this.bjsj = res.data.accomPlishes[0]
+          } else {
+            res.data.accomPlishes = []
+          }
+          this.ruleForm = res.data
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格删除按钮
+    tabeleDel(row) {
+      this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        // eslint-disable-next-line space-before-function-paren
+        .then(async () => {
+          const res = await Del({ id: row.id })
+          if (res.code === 1) {
+            this.$message.success(res.data)
+            this.search()
+          } else {
+            // this.$message.error(res.message)
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 切换每页条数
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.search()
+    },
+    // 切换当前页码
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.search()
+    },
+    // 点击领导名字增加批示框
+    addDomain(data) {
+      if (this.ruleForm.sclds !== []) {
+        let XTnum = 0
+        this.ruleForm.sclds.forEach(e => {
+          if (data.name === e.approved_by) {
+            XTnum += 1
+          }
+        })
+        if (XTnum > 2) {
+          this.$message.error('领导最多可批示3次！')
+        } else {
+          this.ruleForm.sclds.push({
+            _id: getProjectNum(),
+            approved_by: data.name,
+            instructions_data: new Date(),
+            content: '',
+            read_circle: false
+          })
+        }
+      } else {
+        this.ruleForm.sclds.push({
+          _id: getProjectNum(),
+          approved_by: data.name,
+          instructions_data: new Date(),
+          content: '',
+          read_circle: false
+        })
+      }
+    },
+    // 批示框里删除按钮
+    delInstructions(index) {
+      if (index !== -1) {
+        this.ruleForm.sclds.splice(index, 1)
+      }
+    },
+    // 保存信息事件
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.ruleForm.letter_time = dayjs(this.ruleForm.letter_time).format('YYYY-MM-DD HH:mm:ss')
+          if (this.ruleForm.sclds.length > 0) {
+            this.ruleForm.sclds.forEach(e => {
+              e.instructions_data = dayjs(e.instructions_data).format('YYYY-MM-DD HH:mm:ss')
+            })
+          }
+          if (this.bjsj.comment) {
+            const obj = this.bjsj
+            obj.conclude_data = dayjs(obj.conclude_data).format('YYYY-MM-DD HH:mm:ss')
+            this.ruleForm.accomPlishes.push(obj)
+          }
+          switch (this.BtnType) {
+            case 'Add':
+              this.add(this.ruleForm)
+              break
+            case 'Modify':
+              this.Modify(this.ruleForm)
+              break
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    // 查询已推送人员的API
+    async searchAlreadyPushInfo(cid) {
+      try {
+        const res = await searchAlreadyPush(cid)
+        if (res.code === 1) {
+          this.personnelTableData = res.data
+        } else {
+          this.$message.error('查询已推送人员失败！')
+        }
+      } catch (error) {
+        // console.log(error)
+      }
+    },
+    // 推送模块选择人员按钮
+    selectPersonnel() {
+      this.dialogFormVisible = true
+      this.searchPersonnelInfo()
+    },
+    // 选择人员弹出层搜索按钮
+    async searchPersonnelInfo(data) {
+      try {
+        const page = {}
+        page.current = this.currentPage1
+        page.size = this.pageSize1
+        page.id = this.cid // 有问题，数据定死
+        const res = await searchCanPush({ ...page, ...data })
+        if (res.code === 1) {
+          if (data) this.$message.success(res.message)
+          if (res.data === null) {
+            this.dialogTableData = res.data
+            this.total1 = 0
+          } else {
+            this.dialogTableData = res.data.records
+            this.total1 = res.data.total
+          }
+          this.currentPage1 = 1
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 选择人员切换每页条数
+    handleSizeChange1(val) {
+      this.pageSize = val
+      this.searchPersonnelInfo()
+    },
+    // 选择人员切换当前页码
+    handleCurrentChange1(val) {
+      this.currentPage = val
+      this.searchPersonnelInfo()
+    },
     // 日志按钮
     LogBtn() {
       this.logDialogVisible = true
@@ -390,34 +716,9 @@ export default {
     ScanCodeToSign() {
       this.sigDialogVisible = true
     },
-    // 保存信息事件
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          alert('submit!')
-          this.$refs[formName].resetFields()
-        } else {
-          console.log('error submit!!')
-          return false
-        }
-      })
-    },
     // 重置事件
     resetForm(formName) {
       this.$refs[formName].resetFields()
-    },
-    // 切换每页条数
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-    },
-    // 切换当前页码
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
-    },
-    // 表格中操作>签收事件
-    signForevent(row) {
-      console.log(row)
-      this.sigDialogVisible = true
     },
     // 组件传参->接收参数
     getsig(data) {
@@ -426,20 +727,6 @@ export default {
     // 组件传参->接收参数 关闭日志
     SetClose(data) {
       this.logDialogVisible = data
-    },
-    // 点击领导名字增加批示框
-    addDomain() {
-      this.InstructionBox.push({
-        InstructionsForm: {
-          name: ''
-        }
-      })
-    },
-    // 批示框里删除按钮
-    delInstructions(index) {
-      if (index !== -1) {
-        this.InstructionBox.splice(index, 1)
-      }
     },
     // 上传列表删除
     handleRemove(file, fileList) {
@@ -456,25 +743,11 @@ export default {
     },
     // 下载附件按钮
     downTemplate() {},
-    // 表格删除按钮
-    tabeleDel(index) {
-      this.tableData.splice(index, 1)
-    },
-    // 表格查看按钮
-    tableView(row) {
-      console.log(row)
-    },
     // 表格选择项发生变化时
     handleSelectionChange(val) {
       console.log(val)
       this.multipleSelection = val
     },
-    // 推送模块选择人员按钮
-    selectPersonnel() {
-      this.dialogFormVisible = true
-    },
-    // 选择人员弹出层搜索按钮
-    searchPersonnel() {},
     // 选择人员弹出层表格选择项发生变化时
     dialogSelectionChange(val) {
       console.log(val)
@@ -483,6 +756,7 @@ export default {
     // 选择人员弹出层表格选择按钮
     choose(row) {
       console.log(row)
+      this.$refs.moviesTable.toggleRowSelection(row)
     },
     // 选择人员弹出层关闭按钮
     close() {
@@ -566,5 +840,15 @@ export default {
 }
 .navigation-right {
   float: right;
+}
+.search_box {
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.span_color {
+  margin-right: 0.625rem;
+}
+.ml_15 {
+  margin-left: 0.625rem;
 }
 </style>
