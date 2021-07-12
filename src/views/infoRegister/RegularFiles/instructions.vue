@@ -302,7 +302,8 @@ export default {
         bmjzyj: null,
         comment: null,
         sclds: [],
-        accomPlishes: []
+        accomPlishes: [],
+        file_type: 1
       },
       rules: {
         phone_name: [
@@ -468,6 +469,7 @@ export default {
     },
     // 调取修改接口的方法
     async Modify(data) {
+      data.file_type = 1
       try {
         const obj = {}
         obj.beforeDataChange = this.OldData

@@ -389,6 +389,7 @@ export default {
         bmjzyj: null,
         sjldps: null,
         comment: null,
+        file_type: 3,
         company: null
       },
       rules: {
@@ -462,10 +463,10 @@ export default {
         { value: 3, label: '平级和下级来文' },
         { value: 4, label: '群众来信' },
         { value: 5, label: '其他' },
-        { value: 7, label: '上级督办件' },
-        { value: 8, label: '厅批督办件' },
-        { value: 9, label: '政协提案' },
-        { value: 10, label: '人大建议' }
+        { value: 6, label: '上级督办件' },
+        { value: 7, label: '厅批督办件' },
+        { value: 8, label: '政协提案' },
+        { value: 9, label: '人大建议' }
       ],
       bjsj: {
         conclude_data: new Date(),
@@ -546,6 +547,7 @@ export default {
     },
     // 调取修改接口的方法
     async Modify(data) {
+      data.file_type = 3
       try {
         const obj = {}
         obj.beforeDataChange = this.OldData

@@ -3,7 +3,6 @@
     <div class="container">
       <div class="navigation">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <!-- <el-breadcrumb-item>信息登记</el-breadcrumb-item> -->
           <el-breadcrumb-item>督办件</el-breadcrumb-item>
           <el-breadcrumb-item>厅批督办件</el-breadcrumb-item>
         </el-breadcrumb>
@@ -38,25 +37,25 @@
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="125px" class="demo-ruleForm">
             <el-row>
               <el-col :span="12">
-                <el-form-item label="流水号：" prop="name" required>
-                  <el-input v-model="ruleForm.name"></el-input>
+                <el-form-item label="流水号：" required>
+                  <el-input v-model="ruleForm.serialNum"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="文号：" prop="name">
-                  <el-input v-model.number="ruleForm.name" placeholder="请输入文号"></el-input>
+                <el-form-item label="文号：">
+                  <el-input v-model="ruleForm.documentNum" placeholder="请输入文号"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="来文内容：" prop="name" required>
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+                <el-form-item label="来文内容：" prop="content">
+                  <el-input v-model="ruleForm.content" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="涉及内容：">
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+                  <el-input v-model="ruleForm.involve" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -64,67 +63,65 @@
               <el-col :span="12">
                 <el-form-item label="督办号：">
                   湘公督办[
-                  <el-input v-model="ruleForm.name" style="width:70px;"></el-input>] <el-input v-model="ruleForm.name" style="width:70px;"></el-input>号
+                  <el-input v-model="ruleForm.supervisionNum" style="width:70px;"></el-input> ] <el-input v-model="ruleForm.supervisionNum" style="width:70px;"></el-input>号
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="收文时间：">
-                  <el-date-picker v-model="ruleForm.name" style="width:100%" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
+                  <el-date-picker v-model="ruleForm.receivingTime" style="width:100%" type="datetime" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="来文份数：">
-                  <el-input v-model.number="ruleForm.name" placeholder="请输入来文份数"></el-input>
+                <el-form-item label="来文份数：" prop="quantity">
+                  <el-input v-model.number="ruleForm.quantity" placeholder="请输入来文份数"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="来件渠道：">
-                  <el-input v-model="ruleForm.name" placeholder="请输入来件渠道"></el-input>
+                  <el-input v-model="ruleForm.incomingChannel" placeholder="请输入来件渠道"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="来文单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择来文单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
+                <el-form-item label="来文单位：" prop="unit">
+                  <el-select v-model="ruleForm.unit" style="width:100%" clearable placeholder="请选择来文单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
                 ></el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="联系人：">
-                  <el-input v-model="ruleForm.name" placeholder="请输入联系人"></el-input>
+                <el-form-item label="联系人：" prop="contacts">
+                  <el-input v-model="ruleForm.contacts" placeholder="请输入联系人"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-form-item label="登记日期："> <el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" style="width:100%" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker></el-form-item>
+                <el-form-item label="登记日期："> <el-date-picker v-model="ruleForm.registerDate" type="datetime" placeholder="选择日期" style="width:100%" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker></el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="联系电话：">
-                  <el-input v-model="ruleForm.name" placeholder="请输入联系电话"></el-input>
+                <el-form-item label="联系电话：" prop="phone">
+                  <el-input v-model="ruleForm.phone" placeholder="请输入联系电话"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
                 <el-form-item label="原件领导批示：">
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+                  <el-input v-model="ruleForm.instructions" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-row>
                   <el-col :span="12">
                     <el-form-item label="登记人：">
-                      <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                      <span>{{ ruleForm.name ? ruleForm.name : '王湘琴' }}</span>
+                      <span>{{ ruleForm.registrant }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item label="登记单位：">
-                      <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                      <span>{{ ruleForm.name ? ruleForm.name : '厅长秘书处' }}</span>
+                      <span>{{ ruleForm.theApplicant }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -133,7 +130,7 @@
             <el-row>
               <el-col :span="12">
                 <el-form-item label="备注：">
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+                  <el-input v-model="ruleForm.remarks" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -376,50 +373,67 @@
       </el-card>
 
       <el-card class="box-card">
-        <div class="condition">
-          <div class="condition-col"><span style="margin-left:15px" />流水号:<el-input v-model="conditionInputs.lsh" placeholder="请输入内容" clearable> </el-input></div>
-          <div class="condition-col">来文内容:<el-input v-model="conditionInputs.lwnr" placeholder="请输入内容" clearable> </el-input></div>
-          <div class="condition-col">
-            收文时间:<el-date-picker v-model="conditionInputs.lwsj1" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>-
-            <el-date-picker v-model="conditionInputs.lwsj2" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-          </div>
-          <div class="condition-col">
-            办理情况:<el-select v-model="conditionInputs.blqk" clearable placeholder="请选择">
+        <el-row type="flex" justify="space-around" class="search_box">
+          <el-col :span="7">
+            <span class="span_color" style="margin-left:15px">流水号:</span>
+            <el-input v-model="conditionInputs.serialNum" style="width:70%" placeholder="请输入内容" clearable> </el-input>
+          </el-col>
+          <el-col :span="7">
+            <span class="span_color">来文内容:</span>
+            <el-input v-model="conditionInputs.content" style="width:70%" placeholder="请输入内容" clearable> </el-input>
+          </el-col>
+          <el-col :span="7">
+            <span class="span_color">办理情况:</span>
+            <el-select v-model="conditionInputs.situation" style="width:70%" clearable placeholder="请选择">
               <el-option v-for="item in blqkSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select>
-          </div>
-          <div class="condition-col">
-            <el-button @click="search">查询</el-button>
-          </div>
-        </div>
-        <el-table :data="tableData" style="width: 100%;height:500px;" @selection-change="handleSelectionChange">
+          </el-col>
+          <el-col :span="16" style="margin-top:15px">
+            <span class="span_color">收文时间:</span>
+            <el-date-picker v-model="timeData" type="daterange" range-separator="-" value-format="yyyy-MM-dd HH:mm:ss" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
+          </el-col>
+          <el-col :span="6" style="margin-top:15px;text-align:center">
+            <el-button style="width:150px" @click="search(conditionInputs)">查询</el-button>
+            <el-button style="width:150px" type="danger" @click="batchDeletion">批量删除</el-button>
+          </el-col>
+        </el-row>
+        <el-table :data="tableData" style="width: 100%" height="500" @selection-change="handleSelectionChange">
           <el-table-column label="全选" type="selection" width="50px" :resizable="false"></el-table-column>
           <el-table-column label="序号" type="index" width="50px" align="center" :resizable="false"></el-table-column>
-          <el-table-column label="文件类型" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="流水号" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="督办号" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="收文时间" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="文号" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="来文单位" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="来文内容" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="要求办结时间" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="登记人" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="文件状态" prop="wjlx" align="center" :resizable="false">
+          <el-table-column label="文件类型" prop="fileType" :resizable="false" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.wjlx === 0">签收</span>
-              <span v-if="scope.row.wjlx === 1">已签收</span>
-              <!-- <el-button v-else size="mini" @click="signForevent(scope.row)">签收</el-button> -->
-              <span v-else>{{ scope.row.wjlx }}</span>
+              <template v-for="wjlx in wj_Type">
+                <span v-if="scope.row.fileType === wjlx.value" :key="wjlx.value">{{ wjlx.label }}</span>
+              </template>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="center">
+          <el-table-column label="流水号" prop="serialNum" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="督办号" prop="supervisionNum" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="收文时间" prop="receivingTime" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="文号" prop="documentNum" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="来文单位" prop="unit" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="来文内容" prop="content" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="要求办结时间" :resizable="false" align="center">
+            <template slot-scope="scope">
+              <span>{{ scope.row.transactions[0].requiredDate }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="登记人" prop="registrant" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="文件状态" prop="fileStatus" align="center" :resizable="false">
+            <template slot-scope="scope">
+              <span v-if="scope.row.fileStatus === '0'">签收</span>
+              <span v-if="scope.row.fileStatus === '1'">已签收</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
-              <el-link type="danger" style="margin-left:10px" @click="tabeleDel(scope.$index)">删除</el-link>
+              <!-- <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link> -->
+              <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="50" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+        <el-pagination :current-page="currentPage" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
       </el-card>
     </div>
 
@@ -431,6 +445,11 @@
 <script>
 import SignFordialog from './Dialog/topsupsignFordialog'
 import LogDialog from './LogDialog/hallSupervision.vue'
+// eslint-disable-next-line no-unused-vars
+import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/Supervision/hallSupervision'
+import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
+import { getProjectNum } from '@/utils/comm'
+// import dayjs from 'dayjs'
 export default {
   components: {
     // 扫码签收
@@ -440,27 +459,61 @@ export default {
   },
   data() {
     return {
+      // 文件类型
+      wj_Type: [
+        { value: 1, label: '呈批件' },
+        { value: 2, label: '上级来文' },
+        { value: 3, label: '平级和下级来文' },
+        { value: 4, label: '群众来信' },
+        { value: 5, label: '其他' },
+        { value: 6, label: '上级督办件' },
+        { value: 7, label: '厅批督办件' },
+        { value: 8, label: '政协提案' },
+        { value: 9, label: '人大建议' }
+      ],
       ruleForm: {
-        name: ''
+        serialNum: getProjectNum(),
+        registrant: '王湘琴',
+        theApplicant: '厅长秘书处',
+        receivingTime: new Date(),
+        quantity: 1,
+        // completionTime: new Date(),
+        registerDate: new Date(),
+        fileType: 7
       },
       rules: {
-        name: [{ required: true, message: '请输入流水号', trigger: 'blur' }]
+        contacts: [
+          { required: true, message: '请输入联系人', trigger: 'blur' },
+          { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
+        ],
+        unit: [{ required: true, message: '请选择单位', trigger: 'blur' }],
+        content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
+        phone: [
+          { required: false, trigger: 'blur' },
+          { validator: validatePhoneTwo, trigger: 'blur' }
+        ],
+        quantity: [
+          { required: false, trigger: 'blur' },
+          { validator: validateNumber, trigger: 'blur' }
+        ],
+        hz: [{ validator: validateContacts, trigger: 'blur' }]
       },
       options: [],
-      blqkSelect: [],
-      conditionInputs: {
-        lsh: '',
-        lwnr: '',
-        lwsj1: '',
-        lwsj2: '',
-        blqk: ''
-      },
-      tableData: [
-        {
-          wjlx: '上级督办件'
-        }
+      blqkSelect: [
+        { label: '未办结', value: 1 },
+        { label: '已办结', value: 0 }
       ],
-      currentPage4: 1,
+      conditionInputs: {},
+      timeData: [],
+      tableData: [],
+      // 当前页面
+      currentPage: 1,
+      // 当前展示条数
+      pageSize: 10,
+      // 总数
+      total: 20,
+      // 领导数据
+      Ldlist: [],
       sigDialogVisible: false,
       wqrqzlxsl: 0,
       logDialogVisible: false, // 显示日志弹出框
@@ -513,10 +566,121 @@ export default {
       ]
     }
   },
+  created() {
+    this.search()
+    this.getLdList()
+  },
   methods: {
     // 搜索按钮
-    search() {
-      console.log(this.trackingData)
+    async search(data) {
+      try {
+        const pageData = {}
+        let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+        }
+        pageData.pageIndex = this.currentPage
+        pageData.pageSize = this.pageSize
+        pageData.fileType = 7
+        paramsData = { ...data }
+        if (this.timeData !== null && this.timeData.length > 0) {
+          paramsData.receivingStartDate = this.timeData[0]
+          paramsData.receivingEndDate = this.timeData[1]
+        }
+        const res = await searchAll({ ...pageData, ...paramsData })
+        if (res.code === 1) {
+          this.tableData = res.data
+          this.total = res.count
+          paramsData = {}
+          if (data) {
+            this.$message.success(res.message)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 获取领导数据
+    async getLdList() {
+      const res = await getDicGroupBy()
+      if (res.code === 1) {
+        this.Ldlist = res.data
+      } else {
+        this.$message('获取领导数据失败')
+      }
+    },
+    // 切换每页条数
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.search()
+    },
+    // 切换当前页码
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.search()
+    },
+    // 表格选择项发生变化时
+    handleSelectionChange(val) {
+      console.log(val)
+      const arr = []
+      val.forEach(e => {
+        arr.push(e.serialNum)
+      })
+      this.multipleSelection = arr
+    },
+    // 批量删除
+    async batchDeletion() {
+      if (this.multipleSelection.length > 0) {
+        this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          // eslint-disable-next-line space-before-function-paren
+          .then(async () => {
+            const id = this.multipleSelection.join(',')
+            const res = await Del(id)
+            if (res.code === 1) {
+              this.$message.success(res.message)
+              this.multipleSelection = []
+              this.search()
+            } else {
+              this.$message.error(res.message)
+            }
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      } else {
+        this.$message.info('请选择要删除的数据！')
+      }
+    },
+    // 表格删除按钮
+    tabeleDel(row) {
+      this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        // eslint-disable-next-line space-before-function-paren
+        .then(async () => {
+          const res = await Del(row.serialNum)
+          if (res.code === 1) {
+            this.$message.success(res.message)
+            this.search()
+          } else {
+            this.$message.error(res.message)
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     // 日志按钮
     LogBtn() {
@@ -541,14 +705,6 @@ export default {
     // 重置事件
     resetForm(formName) {
       this.$refs[formName].resetFields()
-    },
-    // 切换每页条数
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-    },
-    // 切换当前页码
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
     },
     // 表格中操作>签收事件
     signForevent(row) {
@@ -592,18 +748,9 @@ export default {
     },
     // 下载附件按钮
     downTemplate() {},
-    // 表格删除按钮
-    tabeleDel(index) {
-      this.tableData.splice(index, 1)
-    },
     // 表格查看按钮
     tableView(row) {
       console.log(row)
-    },
-    // 表格选择项发生变化时
-    handleSelectionChange(val) {
-      console.log(val)
-      this.multipleSelection = val
     },
     // 跟踪办理添加按钮
     addTracking() {
@@ -699,8 +846,18 @@ export default {
 ::v-deep .delete_btn_class span {
   writing-mode: tb-rl;
 }
-.del_btn {
-  /* height: 50%;
-  margin-left: 20px; */
+/* .del_btn {
+  height: 50%;
+  margin-left: 20px;
+} */
+.search_box {
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.span_color {
+  margin-right: 0.625rem;
+}
+.ml_15 {
+  margin-left: 0.9375rem;
 }
 </style>
