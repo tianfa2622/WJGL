@@ -3,7 +3,6 @@
     <div class="container">
       <div class="navigation">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-          <!-- <el-breadcrumb-item>信息登记</el-breadcrumb-item> -->
           <el-breadcrumb-item>提案建议</el-breadcrumb-item>
           <el-breadcrumb-item>人大建议登记</el-breadcrumb-item>
         </el-breadcrumb>
@@ -437,50 +436,63 @@
       </el-card>
 
       <el-card class="box-card">
-        <div class="condition">
-          <div class="condition-col"><span style="margin-left:15px" />流水号:<el-input v-model="conditionInputs.lsh" placeholder="请输入内容" clearable> </el-input></div>
-          <div class="condition-col">来文内容:<el-input v-model="conditionInputs.lwnr" placeholder="请输入内容" clearable> </el-input></div>
-          <div class="condition-col">
-            收文时间:<el-date-picker v-model="conditionInputs.lwsj1" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>-
-            <el-date-picker v-model="conditionInputs.lwsj2" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-          </div>
-          <div class="condition-col">
-            办理情况:<el-select v-model="conditionInputs.blqk" clearable placeholder="请选择">
+        <el-row type="flex" justify="space-around" class="search_box">
+          <el-col :span="7">
+            <span class="span_color" style="margin-left:15px">流水号:</span>
+            <el-input v-model="conditionInputs.serialNum" style="width:70%" placeholder="请输入内容" clearable> </el-input>
+          </el-col>
+          <el-col :span="7">
+            <span class="span_color">标题:</span>
+            <el-input v-model="conditionInputs.content" style="width:70%" placeholder="请输入内容" clearable> </el-input>
+          </el-col>
+          <el-col :span="7">
+            <span class="span_color">办理情况:</span>
+            <el-select v-model="conditionInputs.situation" style="width:70%" clearable placeholder="请选择">
               <el-option v-for="item in blqkSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select>
-          </div>
-          <div class="condition-col">
-            <el-button @click="search">查询</el-button>
-          </div>
-        </div>
-        <el-table :data="tableData" style="width: 100%;height:500px;" @selection-change="handleSelectionChange">
+          </el-col>
+          <el-col :span="16" style="margin-top:15px">
+            <span class="span_color">登记时间:</span>
+            <el-date-picker v-model="timeData" type="daterange" range-separator="-" value-format="yyyy-MM-dd HH:mm:ss" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
+          </el-col>
+          <el-col :span="6" style="margin-top:15px;text-align:center">
+            <el-button style="width:150px" @click="search(conditionInputs)">查询</el-button>
+            <el-button style="width:150px" type="danger" @click="batchDeletion">批量删除</el-button>
+          </el-col>
+        </el-row>
+        <el-table :data="tableData" border style="width: 100%" height="500" @selection-change="handleSelectionChange">
           <el-table-column label="全选" type="selection" width="50px" :resizable="false"></el-table-column>
           <el-table-column label="序号" type="index" width="50px" align="center" :resizable="false"></el-table-column>
-          <el-table-column label="文件类型" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="流水号" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="人大建议号" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="收文时间" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="文号" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="来文单位" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="来文内容" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="要求办结时间" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="登记人" prop="wjlx" :resizable="false" align="center"> </el-table-column>
-          <el-table-column label="文件状态" prop="wjlx" align="center" :resizable="false">
+          <el-table-column label="文件类型" prop="fileType" :resizable="false" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.wjlx === 0">签收</span>
-              <span v-if="scope.row.wjlx === 1">已签收</span>
-              <!-- <el-button v-else size="mini" @click="signForevent(scope.row)">签收</el-button> -->
-              <span v-else>{{ scope.row.wjlx }}</span>
+              <template v-for="wjlx in wj_Type">
+                <span v-if="scope.row.fileType === wjlx.value" :key="wjlx.value">{{ wjlx.label }}</span>
+              </template>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="center">
+          <el-table-column label="流水号" prop="serialNum" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="人大建议号" prop="number" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="交办时间" prop="assignmentTime" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="代表团" prop="delegation" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="来文单位" prop="documentUnit" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="领衔委员" prop="leadingMember" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="要求办结时间" prop="completionTime" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="登记人" prop="registrant" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="文件状态" prop="fileStatus" align="center" :resizable="false">
+            <template slot-scope="scope">
+              <span v-if="scope.row.wjlx === '0'">签收</span>
+              <span v-if="scope.row.wjlx === '1'">已签收</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
-              <el-link type="danger" style="margin-left:10px" @click="tabeleDel(scope.$index)">删除</el-link>
+              <!-- <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link> -->
+              <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="50" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+        <el-pagination :current-page="currentPage" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
       </el-card>
     </div>
 
@@ -492,6 +504,10 @@
 <script>
 import SignFordialog from './Dialog/proposesignFordialog.vue'
 import LogDialog from './LogDialog/propose.vue'
+// eslint-disable-next-line no-unused-vars
+import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/Proposal/propose'
+// import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
+// import { getProjectNum } from '@/utils/comm'
 export default {
   components: {
     // 扫码签收
@@ -501,6 +517,18 @@ export default {
   },
   data() {
     return {
+      // 文件类型
+      wj_Type: [
+        { value: 1, label: '呈批件' },
+        { value: 2, label: '上级来文' },
+        { value: 3, label: '平级和下级来文' },
+        { value: 4, label: '群众来信' },
+        { value: 5, label: '其他' },
+        { value: 6, label: '上级督办件' },
+        { value: 7, label: '厅批督办件' },
+        { value: 8, label: '政协提案' },
+        { value: 9, label: '人大建议' }
+      ],
       ruleForm: {
         name: ''
       },
@@ -509,19 +537,15 @@ export default {
       },
       options: [],
       blqkSelect: [],
-      conditionInputs: {
-        lsh: '',
-        lwnr: '',
-        lwsj1: '',
-        lwsj2: '',
-        blqk: ''
-      },
-      tableData: [
-        {
-          wjlx: '上级督办件'
-        }
-      ],
-      currentPage4: 1,
+      conditionInputs: {},
+      timeData: [],
+      tableData: [],
+      // 当前页面
+      currentPage: 1,
+      // 当前展示条数
+      pageSize: 10,
+      // 总数
+      total: 20,
       sigDialogVisible: false,
       wqrqzlxsl: 0,
       logDialogVisible: false, // 显示日志弹出框
@@ -574,10 +598,111 @@ export default {
       ]
     }
   },
+  created() {
+    this.search()
+  },
   methods: {
     // 搜索按钮
-    search() {
-      console.log(this.trackingData)
+    async search(data) {
+      try {
+        const pageData = {}
+        let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+        }
+        pageData.pageIndex = this.currentPage
+        pageData.pageSize = this.pageSize
+        pageData.fileType = 9
+        paramsData = { ...data }
+        if (this.timeData !== null && this.timeData.length > 0) {
+          paramsData.registerStartDate = this.timeData[0]
+          paramsData.registerEndDate = this.timeData[1]
+        }
+        const res = await searchAll({ ...pageData, ...paramsData })
+        if (res.code === 1) {
+          this.tableData = res.data
+          this.total = res.count
+          paramsData = {}
+          if (data) {
+            this.$message.success(res.message)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 切换每页条数
+    handleSizeChange(val) {
+      this.pageSize = val
+      this.search()
+    },
+    // 切换当前页码
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.search()
+    },
+    // 表格选择项发生变化时
+    handleSelectionChange(val) {
+      console.log(val)
+      const arr = []
+      val.forEach(e => {
+        arr.push(e.serialNum)
+      })
+      this.multipleSelection = arr
+    },
+    // 批量删除
+    async batchDeletion() {
+      if (this.multipleSelection.length > 0) {
+        this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          // eslint-disable-next-line space-before-function-paren
+          .then(async () => {
+            const id = this.multipleSelection.join(',')
+            const res = await Del(id)
+            if (res.code === 1) {
+              this.$message.success(res.message)
+              this.multipleSelection = []
+              this.search()
+            } else {
+              this.$message.error(res.message)
+            }
+          })
+          .catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消删除'
+            })
+          })
+      } else {
+        this.$message.info('请选择要删除的数据！')
+      }
+    },
+    // 表格删除按钮
+    tabeleDel(row) {
+      this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        // eslint-disable-next-line space-before-function-paren
+        .then(async () => {
+          const res = await Del(row.serialNum)
+          if (res.code === 1) {
+            this.$message.success(res.message)
+            this.search()
+          } else {
+            this.$message.error(res.message)
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
     // 日志按钮
     LogBtn() {
@@ -602,14 +727,6 @@ export default {
     // 重置事件
     resetForm(formName) {
       this.$refs[formName].resetFields()
-    },
-    // 切换每页条数
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-    },
-    // 切换当前页码
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
     },
     // 表格中操作>签收事件
     signForevent(row) {
@@ -653,18 +770,9 @@ export default {
     },
     // 下载附件按钮
     downTemplate() {},
-    // 表格删除按钮
-    tabeleDel(index) {
-      this.tableData.splice(index, 1)
-    },
     // 表格查看按钮
     tableView(row) {
       console.log(row)
-    },
-    // 表格选择项发生变化时
-    handleSelectionChange(val) {
-      console.log(val)
-      this.multipleSelection = val
     },
     // 跟踪办理添加按钮
     addTracking() {
@@ -764,4 +872,14 @@ export default {
   height: 50%;
   margin-left: 20px
 } */
+.search_box {
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.span_color {
+  margin-right: 0.625rem;
+}
+.ml_15 {
+  margin-left: 0.9375rem;
+}
 </style>

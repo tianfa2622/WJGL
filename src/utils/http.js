@@ -109,11 +109,11 @@ axios.interceptors.response.use(
             toLogin()
           }, 1000)
           break
-        case 404:
-          err.message = '请求错误,未找到该资源'
-          tip(err.message)
-          window.location.href = '/404'
-          break
+        // case 404:
+        //   err.message = '请求错误,未找到该资源'
+        //   tip(err.message)
+        //   window.location.href = '/404'
+        //   break
         case 405:
           err.message = '请求方法未允许'
           tip(err.message)
