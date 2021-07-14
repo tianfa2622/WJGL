@@ -202,6 +202,25 @@ export function validatePhone(rule, value, callback) {
 }
 
 /**
+ * 验证邮编
+ * @param {*} rule
+ * @param {*} value
+ * @param {*} callback
+ */
+export function validateZipCode(rule, value, callback) {
+  const reg = /^(0[1-7]|1[0-356]|2[0-7]|3[0-6]|4[0-7]|5[1-7]|6[1-7]|7[0-5]|8[013-6])\d{4}$/
+  if (value === '' || value === undefined || value === null) {
+    callback()
+  } else {
+    if (!reg.test(value) && value !== '') {
+      callback(new Error('请输入正确邮编'))
+    } else {
+      callback()
+    }
+  }
+}
+
+/**
  * 验证是否固话
  * @param {*} rule
  * @param {*} value
@@ -213,7 +232,7 @@ export function validateTelphone(rule, value, callback) {
     callback()
   } else {
     if (!reg.test(value) && value !== '') {
-      callback(new Error('请输入正确的固定电话）'))
+      callback(new Error('请输入正确的固定电话，格式为XXXX-XXXXXXX'))
     } else {
       callback()
     }
@@ -496,6 +515,7 @@ export const onePoint = (rule, value, callback) => {
     callback()
   }
 }
+
 // /**
 //  * 验证是否合法Ip地址
 //  * @param {*} rule

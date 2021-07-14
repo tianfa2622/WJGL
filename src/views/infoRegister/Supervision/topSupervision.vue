@@ -38,7 +38,7 @@
             <el-row>
               <el-col :span="12">
                 <el-form-item label="流水号：" required>
-                  <el-input v-model="ruleForm.serialNum"></el-input>
+                  <span>{{ ruleForm.serialNum }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -63,7 +63,7 @@
               <el-col :span="12">
                 <el-form-item label="督办号：">
                   湘公督办[
-                  <el-input v-model="ruleForm.num1" style="width:70px;"></el-input> ] <el-input v-model="ruleForm.num2" style="width:70px;"></el-input>号
+                  <el-input v-model.number="ruleForm.supervisionNum_1" maxlength="4" style="width:70px;"></el-input> ] <el-input v-model.number="ruleForm.supervisionNum_2" maxlength="4" style="width:70px;"></el-input>号
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -198,7 +198,7 @@
           </div>
           <el-row type="flex" justify="center">
             <el-col :span="10">
-              <el-form ref="HandleForm" :model="HandleForm" label-width="120px">
+              <el-form ref="HandleForm" :disabled="disabled" :model="HandleForm" label-width="120px">
                 <el-form-item label="主办责任单位：">
                   <el-input v-model="HandleForm.hostUnit" placeholder="请输入主办责任单位"></el-input>
                 </el-form-item>
@@ -272,12 +272,12 @@
                   <span>跟踪办理</span>
                 </el-col>
                 <el-col :span="4">
-                  <el-button @click="addTracking">添加</el-button>
+                  <el-button :disabled="disabled" @click="addTracking">添加</el-button>
                 </el-col>
               </el-row>
             </div>
             <el-row v-for="(j, i) in trackingData" :key="i" style="margin-bottom:20px">
-              <el-form ref="FinishForm" label-width="110px" class="demo-dynamic">
+              <el-form ref="FinishForm" label-width="110px" :disabled="disabled" class="demo-dynamic">
                 <el-col>
                   <el-card style="padding-left:30px">
                     <!-- 跟踪办理情况模块 -->
@@ -305,7 +305,7 @@
                     <el-row>
                       <el-col :span="4" style="text-align:center"><div style="padding:10px 0;">领导批示：</div></el-col>
                       <el-col :span="18">
-                        <el-button v-for="(ld, index) in Ldlist" :key="index" plain class="leadershipBtn" :disabled="disabled" @click="addDomain1(ld)">
+                        <el-button v-for="(ld, index) in Ldlist" :key="index" plain class="leadershipBtn" :disabled="disabled" @click="addDomain1(ld, i)">
                           {{ ld.name }}
                         </el-button>
                       </el-col>
@@ -325,13 +325,13 @@
                                 </el-col>
                                 <el-col :span="16">
                                   <el-form-item label="批示时间：">
-                                    <el-date-picker v-model="item.instructionsData" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
-                                    <el-button style="margin-left:10px" @click="item.read = true">{{ item.read === true ? '已圈阅' : '圈阅' }}</el-button>
+                                    <el-date-picker v-model="item.instructionsData" :disabled="disabled === true ? disabled : item.read" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss"> </el-date-picker>
+                                    <el-button style="margin-left:10px" :disabled="disabled === true ? disabled : item.read" @click="item.read = true">{{ item.read === true ? '已圈阅' : '圈阅' }}</el-button>
                                   </el-form-item>
                                 </el-col>
                               </el-row>
                               <el-form-item label="批示内容：">
-                                <el-input v-model="item.instructionsContent" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                                <el-input v-model="item.instructionsContent" :disabled="disabled === true ? disabled : item.read" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                               </el-form-item>
                             </el-col>
                             <el-col :span="3">
@@ -366,13 +366,13 @@
                     <el-row type="flex" class="GZBLBJ_class" style="margin-top:10px">
                       <el-col :span="18">
                         <el-form-item label="实际办结时间：">
-                          <el-date-picker v-model="j.concludeData" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                          <el-button style="margin-left:30px" type="primary" @click="j.situation = true">{{ j.situation === true ? '已办结' : '办结' }}</el-button>
+                          <el-date-picker v-model="j.concludeData" :disabled="disabled === true ? disabled : j.situation" type="datetime" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
+                          <el-button style="margin-left:30px" type="primary" :disabled="disabled === true ? disabled : j.situation" @click="j.situation = true">{{ j.situation === true ? '已办结' : '办结' }}</el-button>
                         </el-form-item>
                       </el-col>
                       <el-col :span="18">
                         <el-form-item label="办结备注：">
-                          <el-input v-model="j.comment" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
+                          <el-input v-model="j.comment" :disabled="disabled === true ? disabled : j.situation" type="textarea" resize="none" :rows="3" placeholder="请输入内容"> </el-input>
                         </el-form-item>
                       </el-col>
                     </el-row>
@@ -419,7 +419,7 @@
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="流水号" prop="serialNum" :resizable="false" align="center"> </el-table-column>
+          <el-table-column label="流水号" header-align="center" prop="serialNum" :resizable="false"> </el-table-column>
           <el-table-column label="督办号" prop="supervisionNum" min-width="160" :resizable="false" align="center"> </el-table-column>
           <el-table-column label="收文时间" prop="receivingTime" min-width="110" :resizable="false" align="center"> </el-table-column>
           <el-table-column label="文号" prop="documentNum" :resizable="false" align="center"> </el-table-column>
@@ -429,14 +429,14 @@
           <el-table-column label="登记人" prop="registrant" :resizable="false" align="center"> </el-table-column>
           <el-table-column label="文件状态" prop="fileStatus" align="center" :resizable="false">
             <template slot-scope="scope">
-              <span v-if="scope.row.fileStatus === '0'">签收</span>
-              <span v-if="scope.row.fileStatus === '1'">已签收</span>
+              <span v-if="scope.row.fileStatus === 1">未签收</span>
+              <span v-if="scope.row.fileStatus === 2">已签收</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center">
+          <el-table-column label="操作" width="140" align="center">
             <template slot-scope="scope">
               <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
-              <!-- <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link> -->
+              <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link>
               <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
           </el-table-column>
@@ -454,7 +454,7 @@
 import SignFordialog from './Dialog/topsupsignFordialog'
 import LogDialog from './LogDialog/topSupervision.vue'
 // eslint-disable-next-line no-unused-vars
-import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/Supervision/topSupervision'
+import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/Supervision/topSupervision'
 import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
 import { getProjectNum } from '@/utils/comm'
 import dayjs from 'dayjs'
@@ -492,15 +492,17 @@ export default {
         documentNum: null,
         content: null,
         involve: null,
-        supervisionNum: null,
         incomingChannel: null,
         unit: null,
         contacts: null,
         instructions: null,
         remarks: null,
+        supervisionNum_1: null,
+        supervisionNum_2: null,
         transactions: [],
         delivers: [],
-        concludes: []
+        concludes: [],
+        trackings: []
       },
       rules: {
         contacts: [
@@ -543,18 +545,6 @@ export default {
       sigDialogVisible: false,
       wqrqzlxsl: 0,
       logDialogVisible: false, // 显示日志弹出框
-      // 批示数据
-      InstructionBox: [
-        {
-          InstructionsForm: {
-            name: ''
-          }
-        }
-      ],
-      // 办结数据
-      FinishForm: {
-        name: ''
-      },
       // 上传文件列表
       fileList: [],
       // 表格选择项
@@ -572,16 +562,7 @@ export default {
       // 办理框数据
       HandleForm: {},
       // 跟踪办结数据
-      trackingData: [
-        {
-          requiredDate: new Date(),
-          track: '',
-          delivers: [],
-          concludeData: new Date(),
-          situation: false,
-          comment: ''
-        }
-      ],
+      trackingData: [],
       BtnType: 'Add',
       disabled: false
     }
@@ -609,6 +590,13 @@ export default {
         }
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
+          res.data.forEach(e => {
+            if (e.supervisionNum_1 && e.supervisionNum_2) {
+              e.supervisionNum = `湘公督办 [ ${e.supervisionNum_1} ] ${e.supervisionNum_2} 号`
+            } else {
+              e.supervisionNum = '暂无数据'
+            }
+          })
           this.tableData = res.data
           this.total = res.count
           paramsData = {}
@@ -684,7 +672,8 @@ export default {
     },
     // 追加点击领导名字增加批示框
     addDomain1(data, i) {
-      if (this.trackingData[i].delivers !== []) {
+      console.log(data, i)
+      if (this.trackingData[i].delivers.length > 0) {
         let XTnum = 0
         this.trackingData[i].delivers.forEach(e => {
           if (data.name === e.approvedBy) {
@@ -723,36 +712,63 @@ export default {
           this.ruleForm.receivingTime = dayjs(this.ruleForm.receivingTime).format('YYYY-MM-DD HH:mm:ss')
           this.ruleForm.registerDate = dayjs(this.ruleForm.registerDate).format('YYYY-MM-DD HH:mm:ss')
           this.ruleForm.completionTime = dayjs(this.ruleForm.completionTime).format('YYYY-MM-DD HH:mm:ss')
-          if (this.ruleForm.num1 && this.ruleForm.num2) {
-            this.ruleForm.supervisionNum = `湘公督办 [ ${this.ruleForm.num1} ] ${this.ruleForm.num2} 号`
-          } else {
-            this.ruleForm.supervisionNum = ''
-          }
+          // 判断批示内容和圈阅按钮，提交数据
           if (this.ruleForm.delivers.length > 0) {
-            this.ruleForm.sclds.forEach(e => {
+            for (let i = 0; i < this.ruleForm.delivers.length; i++) {
+              const p = this.ruleForm.delivers[i]
+              if (p.instructionsContent !== '' || p.read === true) {
+                p.instructionsData = dayjs(p.instructionsData).format('YYYY-MM-DD HH:mm:ss')
+              } else {
+                this.ruleForm.delivers.splice(i, 1)
+              }
+            }
+            this.ruleForm.delivers.forEach(e => {
               e.instructionsData = dayjs(e.instructionsData).format('YYYY-MM-DD HH:mm:ss')
             })
           }
+          // 判断办理数据
           if (Object.keys(this.HandleForm).length > 0) {
-            this.ruleForm.transactions.push(this.HandleForm)
+            this.ruleForm.transactions = [{ ...this.HandleForm }]
           }
-          if (this.bjsj.comment) {
-            this.ruleForm.concludes.push(this.bjsj)
+          // 判断办结数据
+          if (this.bjsj.comment || this.bjsj.situation === true) {
+            const obj = this.bjsj
+            obj.concludeData = dayjs(obj.concludeData).format('YYYY-MM-DD HH:mm:ss')
+            this.ruleForm.concludes.push(obj)
           }
-          delete this.ruleForm.num1
-          delete this.ruleForm.num2
-          console.log(this.ruleForm)
+          // 判断追踪办理
+          if (this.trackingData.length > 0) {
+            for (let i = 0; i < this.trackingData.length; i++) {
+              const e = this.trackingData[i]
+              if (e.track !== '' || e.delivers.length > 0 || e.comment !== '') {
+                e.requiredDate = dayjs(e.requiredDate).format('YYYY-MM-DD HH:mm:ss')
+                e.concludeData = dayjs(e.concludeData).format('YYYY-MM-DD HH:mm:ss')
+                if (e.delivers.length > 0) {
+                  for (let o = 0; o < e.delivers.length; o++) {
+                    if (e.delivers[o].instructionsContent !== '' || e.delivers[o].read === true) {
+                      e.delivers[o].instructionsData = dayjs(e.delivers[o].instructionsData).format('YYYY-MM-DD HH:mm:ss')
+                    } else {
+                      e.delivers.splice(o, 1)
+                    }
+                  }
+                }
+              } else {
+                this.trackingData.splice(i, 1)
+              }
+            }
+            this.ruleForm.trackings = this.trackingData
+          }
+          delete this.ruleForm.supervisionNum
           // this.$refs[formName].resetFields()
-          // switch (this.BtnType) {
-          //   case 'Add':
-          //     this.add(this.ruleForm)
-          //     break
-          //   case 'Modify':
-          //     this.Modify(this.ruleForm)
-          //     break
-          // }
+          switch (this.BtnType) {
+            case 'Add':
+              this.add(this.ruleForm)
+              break
+            case 'Modify':
+              this.Modify(this.ruleForm)
+              break
+          }
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -764,12 +780,94 @@ export default {
         if (res.code === 1) {
           this.$message.success(res.message)
           Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
-          // Object.assign(this.$data.bjsj, this.$options.data().bjsj)
-          Object.assign(this.$data.HandleForm, this.$options.data().HandleForm)
+          Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          this.HandleForm = {}
+          Object.assign(this.$data.trackingData, this.$options.data().trackingData)
           this.BtnType = 'Add'
           this.search()
         } else {
           // this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 调取修改接口的方法
+    async Modify(data) {
+      try {
+        // const obj = {}
+        // obj.beforeDataChange = this.OldData
+        // obj.AfterDataChange = data
+        const res = await ModifyApi({ ...data })
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          this.HandleForm = {}
+          Object.assign(this.$data.trackingData, this.$options.data().trackingData)
+          this.BtnType = 'Add'
+          this.search()
+        } else {
+          // this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格查看按钮
+    async tableView(row) {
+      try {
+        Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+        Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+        this.HandleForm = {}
+        Object.assign(this.$data.trackingData, this.$options.data().trackingData)
+        const res = await searchOne({ serialNum: row.serialNum })
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          this.BtnType = 'View'
+          this.disabled = true
+          this.ruleForm = res.data
+          if (res.data.concludes && res.data.concludes.length > 0) {
+            this.bjsj = res.data.concludes[0]
+          }
+          if (res.data.transactions && res.data.transactions.length > 0) {
+            this.HandleForm = res.data.transactions[0]
+          }
+          if (res.data.trackings && res.data.trackings.length > 0) {
+            this.trackingData = res.data.trackings
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 表格修改按钮
+    async tableModify(row) {
+      try {
+        const res = await searchOne({ serialNum: row.serialNum })
+        if (res.code === 1) {
+          this.disabled = false
+          this.BtnType = 'Modify'
+          // this.OldData = JSON.parse(JSON.stringify(res.data))
+          // if (res.data.sclds === null) {
+          //   res.data.sclds = []
+          // }
+          this.ruleForm = res.data
+          if (res.data.concludes && res.data.concludes.length > 0) {
+            this.bjsj = res.data.concludes[0]
+          } else {
+            Object.assign(this.$data.bjsj, this.$options.data().bjsj)
+          }
+          if (res.data.transactions && res.data.transactions.length > 0) {
+            this.HandleForm = res.data.transactions[0]
+          } else {
+            this.HandleForm = {}
+          }
+          if (res.data.trackings && res.data.trackings.length > 0) {
+            this.trackingData = res.data.trackings
+          } else {
+            Object.assign(this.$data.trackingData, this.$options.data().trackingData)
+          }
         }
       } catch (error) {
         console.log(error)
@@ -869,10 +967,6 @@ export default {
     },
     // 下载附件按钮
     downTemplate() {},
-    // 表格查看按钮
-    tableView(row) {
-      console.log(row)
-    },
     // 跟踪办理添加按钮
     addTracking() {
       this.trackingData.push({
@@ -913,7 +1007,7 @@ export default {
   margin-bottom: 15px;
 }
 .Children {
-  width: 70%;
+  width: 80%;
   margin: 0 auto;
   margin-bottom: 15px;
 }
