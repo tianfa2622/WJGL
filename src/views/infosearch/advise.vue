@@ -17,264 +17,25 @@
             <el-row>
               <el-col :span="24">
                 <el-form-item label="文件类型：">
-                  <el-radio-group v-model="ruleForm.checkList">
-                    <el-radio label="政协提案" border>政协提案</el-radio>
-                    <el-radio label="人大提案" border>人大提案</el-radio>
+                  <el-radio-group v-model="ruleForm.fileType" @change="search()">
+                    <el-radio :label="8" border>政协提案</el-radio>
+                    <el-radio :label="9" border>人大提案</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row v-show="ruleForm.checkList === '政协提案'" justify="space-between">
-              <el-col :span="8">
-                <el-form-item label="流水号：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入流水号"></el-input>
-                  <!-- <span>{{ ruleForm.name ? ruleForm.name : 2100082 }}</span> -->
-                </el-form-item>
-                <el-form-item label="来文单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择来文单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="交办时间：">
-                  <el-date-picker v-model="ruleForm.name" style="width:100%" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="分办单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择分办单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="手机：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入手机号码"></el-input>
-                </el-form-item>
-                <el-form-item label="登记人：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入登记人"></el-input>
-                  <!-- <span>{{ ruleForm.name ? ruleForm.name : '王湘琴' }}</span> -->
-                </el-form-item>
-                <el-form-item label="备注：">
-                  <el-input v-model="ruleForm.name" type="textarea" :rows="3" resize="none" placeholder="请输入内容"> </el-input>
-                </el-form-item>
-              </el-col>
-
-              <el-col :span="8">
-                <el-form-item label="登记日期：">
-                  <el-date-picker v-model="ruleForm.name" type="date" style="width:100%" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="界别：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入界别"></el-input>
-                </el-form-item>
-                <el-form-item label="主办单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择主办单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="办公电话：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入办公电话"></el-input>
-                </el-form-item>
-                <el-form-item label="要求办结时间：">
-                  <el-date-picker v-model="ruleForm.name" style="width:100%" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="登记单位：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入登记单位"></el-input>
-                  <!-- <span>{{ ruleForm.name ? ruleForm.name : '厅长秘书处' }}</span> -->
-                </el-form-item>
-                <el-form-item label="界：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入界"></el-input>
-                </el-form-item>
-              </el-col>
-
-              <el-col :span="8">
-                <el-form-item label="标题：">
-                  <!-- <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="4" placeholder="请输入内容"> </el-input> -->
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入标题"></el-input>
-                </el-form-item>
-                <el-form-item label="政协提案编号：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入提案编号"></el-input>
-                </el-form-item>
-                <el-form-item label="领衔委员：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入领衔委员"></el-input>
-                </el-form-item>
-                <el-form-item label="会办单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择会办单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="通讯地址：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入通讯地址"></el-input>
-                </el-form-item>
-                <el-form-item label="邮编：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入邮编"></el-input>
-                </el-form-item>
-                <el-form-item label="次：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入次"></el-input>
-                </el-form-item>
-              </el-col>
+            <el-row v-if="ruleForm.fileType === 8" justify="space-between">
+              <Plan :bloptions="bloptions" :rule-form="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
             </el-row>
 
-            <el-row v-show="ruleForm.checkList === '人大提案'" justify="space-between">
-              <el-col :span="8">
-                <el-form-item label="流水号：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入流水号"></el-input>
-                  <!-- <span>{{ ruleForm.name ? ruleForm.name : 2100082 }}</span> -->
-                </el-form-item>
-                <el-form-item label="标题：" prop="name" required>
-                  <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="4" placeholder="请输入内容"> </el-input>
-                </el-form-item>
-                <el-form-item label="人大建议编号：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入人大建议编号"></el-input>
-                </el-form-item>
-                <el-form-item label="领衔代表：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入领衔代表"></el-input>
-                </el-form-item>
-                <el-form-item label="会办单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择会办单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="通讯地址：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入通讯地址"></el-input>
-                </el-form-item>
-                <el-form-item label="备注：">
-                  <el-input v-model="ruleForm.name" type="textarea" :rows="3" resize="none" placeholder="请输入内容"> </el-input>
-                </el-form-item>
-              </el-col>
-
-              <el-col :span="8">
-                <el-form-item label="登记人：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入登记人"></el-input>
-                  <!-- <span>{{ ruleForm.name ? ruleForm.name : '王湘琴' }}</span> -->
-                </el-form-item>
-                <el-form-item label="代表团：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入代表团"></el-input>
-                </el-form-item>
-                <el-form-item label="交办时间：">
-                  <el-date-picker v-model="ruleForm.name" style="width:100%" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="分办单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择分办单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="办公电话：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入办公电话"></el-input>
-                </el-form-item>
-                <el-form-item label="要求办结时间：">
-                  <el-date-picker v-model="ruleForm.name" style="width:100%" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="界：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入界"></el-input>
-                </el-form-item>
-              </el-col>
-
-              <el-col :span="8">
-                <el-form-item label="登记单位：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入登记单位"></el-input>
-                  <!-- <span>{{ ruleForm.name ? ruleForm.name : '厅长秘书处' }}</span> -->
-                </el-form-item>
-                <el-form-item label="来文单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择来文单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="主办单位：">
-                  <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择主办单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-                ></el-form-item>
-                <el-form-item label="手机号码：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入手机号码"></el-input>
-                </el-form-item>
-                <el-form-item label="登记日期：">
-                  <el-date-picker v-model="ruleForm.name" type="date" style="width:100%" placeholder="选择日期" format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm"> </el-date-picker>
-                </el-form-item>
-                <el-form-item label="邮编：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入邮编"></el-input>
-                </el-form-item>
-                <el-form-item label="次：">
-                  <el-input v-model="ruleForm.name" style="width:100%" placeholder="请输入次"></el-input>
-                </el-form-item>
-              </el-col>
+            <el-row v-if="ruleForm.fileType === 9" justify="space-between">
+              <Propose :bloptions="bloptions" :rule-form="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
             </el-row>
           </el-form>
-          <!-- <el-row>
-            <el-col :span="10">
-              <span>文件类型：</span>
-              <span>
-                <el-checkbox-group v-model="checkList">
-                  <el-checkbox label="政协提案" border></el-checkbox>
-                  <el-checkbox label="人大提案" border></el-checkbox>
-                </el-checkbox-group>
-              </span>
-            </el-col>
-            <el-col :span="8">收文时间：<el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker>-<el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker></el-col>
-            <el-col :span="6">流水号：<el-input v-model="ruleForm.name" placeholder="请输入内容" clearable> </el-input> </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="10">
-              <span>来文内容：</span>
-              <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable> </el-input>
-            </el-col>
-            <el-col :span="8"
-              ><span>来文单位：</span> <el-select v-model="ruleForm.name" clearable placeholder="请选择"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-            ></el-col>
-            <el-col :span="6"
-              ><span>办理情况：</span> <el-select v-model="ruleForm.name" clearable placeholder="全部"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-            ></el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="10">
-              <span>文号：</span>
-              <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable> </el-input>
-            </el-col>
-            <el-col :span="8"><span>提案建议号：</span> <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable> </el-input></el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="10">
-              <span>要求办结时间：</span>
-              <el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker>-<el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker>
-            </el-col>
-            <el-col :span="8">
-              <span>实际办结时间：</span>
-              <el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker>-<el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker
-            ></el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="10">
-              <span>主办单位：</span>
-              <el-select v-model="ruleForm.name" clearable placeholder="请选择">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="8">
-              <span>分办单位：</span>
-              <el-select v-model="ruleForm.name" clearable placeholder="请选择"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-            ></el-col>
-            <el-col :span="6">
-              <span>会办单位：</span>
-              <el-select v-model="ruleForm.name" clearable placeholder="请选择"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select
-            ></el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="10">
-              <span>批示人：</span>
-              <el-select v-model="ruleForm.name" clearable placeholder="请选择">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="8">
-              <span>批示时间：</span>
-              <el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker>-<el-date-picker v-model="ruleForm.name" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" style="width:185px;"> </el-date-picker>
-            </el-col>
-            <el-col :span="6">
-              <span>批示内容：</span>
-              <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable> </el-input>
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="10">
-              <span>办结备注：</span>
-              <el-select v-model="ruleForm.name" clearable placeholder="请选择">
-                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-              </el-select>
-              <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable style="width:200px;margin-left:10px;"> </el-input>
-            </el-col>
-            <el-col :span="8">
-              <span>联系人：</span>
-              <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable style="width:200px;margin-left:10px;"> </el-input>
-            </el-col>
-            <el-col :span="6">
-              <span>联系电话：</span>
-              <el-input v-model="ruleForm.name" placeholder="请输入内容" clearable style="width:200px;margin-left:10px;"> </el-input>
-            </el-col>
-          </el-row> -->
-
           <el-row type="flex" justify="space-between">
             <el-col :span="12" style="line-height: 50px;">
               排序方式：
-              <el-radio-group v-model="radio">
+              <el-radio-group v-model="radio" @change="selectRadio">
                 <el-radio :label="1">厅领导</el-radio>
                 <el-radio :label="2">批示时间</el-radio>
                 <el-radio :label="3">流水号</el-radio>
@@ -283,7 +44,7 @@
             <el-col :span="8">
               <el-row type="flex" justify="center">
                 <el-col :span="4">
-                  <el-button plain @click="search">查询</el-button>
+                  <el-button plain @click="search(ruleForm)">查询</el-button>
                 </el-col>
                 <el-col :span="6">
                   <el-button plain @click="exportExcel">导出excel</el-button>
@@ -297,60 +58,130 @@
             </el-col>
           </el-row>
         </div>
-        <el-table :data="tableData" border style="width: 100%;height:500px;">
+        <el-table :data="tableData" border style="width: 100%;" height="500">
           <el-table-column label="序号" type="index" width="50px" align="center"></el-table-column>
-          <el-table-column label="文件类型" prop="wjlx" width="150px" align="center"> </el-table-column>
-          <el-table-column label="流水号" prop="wjlx" align="center" width="150px">
+          <el-table-column label="文件类型" prop="fileType" :resizable="false" align="center">
             <template slot-scope="scope">
-              <el-link type="primary" @click="tableView(scope.row)">{{ scope.row.wjlx }}</el-link>
+              <template v-for="wjlx in wj_Type">
+                <span v-if="scope.row.fileType === wjlx.value" :key="wjlx.value">{{ wjlx.label }}</span>
+              </template>
             </template>
           </el-table-column>
-          <el-table-column prop="wjlx" label="督办号" width="150px" align="center"> </el-table-column>
-          <el-table-column label="收文时间" prop="wjlx" width="150px" align="center"> </el-table-column>
-          <el-table-column label="文号" prop="wjlx" align="center"> </el-table-column>
-          <el-table-column label="来文单位" prop="wjlx" align="center"> </el-table-column>
-          <el-table-column label="来文内容" prop="wjlx" width="150px" align="center"> </el-table-column>
-          <el-table-column label="要求办结时间" prop="wjlx" width="150px" align="center"> </el-table-column>
-          <el-table-column label="登记人" prop="wjlx" align="center" width="150px"> </el-table-column>
+          <el-table-column label="流水号" width="150px" align="center">
+            <template slot-scope="scope">
+              <el-link type="primary" @click="tableView(scope.row)">{{ scope.row.serialNum }}</el-link>
+            </template>
+          </el-table-column>
+          <el-table-column prop="number" label="编号" width="150px" align="center"> </el-table-column>
+          <el-table-column label="交办时间" prop="assignmentTime" width="150px" align="center"> </el-table-column>
+          <el-table-column label="标题" prop="title" align="center"> </el-table-column>
+          <el-table-column label="来文单位" prop="documentUnit" align="center"> </el-table-column>
+          <el-table-column label="备注" prop="remarks" width="150px" align="center"> </el-table-column>
+          <el-table-column label="要求办结时间" prop="completionTime" width="150px" align="center"> </el-table-column>
+          <el-table-column label="登记人" prop="registrant" align="center" width="150px"> </el-table-column>
         </el-table>
-        <el-pagination :current-page="currentPage4" :page-sizes="[100, 200, 300, 400]" :page-size="10" layout="total, sizes, prev, pager, next, jumper" :total="50" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+        <el-pagination :current-page="currentPage" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
+import Plan from './advise_searchData/plan.vue'
+import Propose from './advise_searchData/propose_search.vue'
+import { searchAll, getDicGroupBy, createExcel } from '@/api/infosearch/advise/advise'
 export default {
+  components: { Plan, Propose },
   data() {
     return {
-      ruleForm: { name: '', checkList: '政协提案' },
+      // 文件类型
+      wj_Type: [
+        { value: 1, label: '呈批件' },
+        { value: 2, label: '上级来文' },
+        { value: 3, label: '平级和下级来文' },
+        { value: 4, label: '群众来信' },
+        { value: 5, label: '其他' },
+        { value: 6, label: '上级督办件' },
+        { value: 7, label: '厅批督办件' },
+        { value: 8, label: '政协提案' },
+        { value: 9, label: '人大建议' }
+      ],
+      ruleForm: { sortOrder: 3, fileType: 8 },
       checkList: [],
       options: [],
-      radio: 3,
-      tableData: [
-        {
-          wjlx: '督办件'
-        }
+      PSRoptions: [],
+      bloptions: [
+        { label: '已办结', value: true },
+        { label: '未办结', value: false }
       ],
-      currentPage4: 1,
+      radio: 3,
+      tableData: [],
+      currentPage: 1,
+      pageSize: 10,
+      total: 20,
       fileData: [],
       outputs: []
     }
   },
+  created() {
+    this.search()
+    this.getLdList()
+  },
   methods: {
+    // 搜索按钮
+    async search(data) {
+      try {
+        const pageData = {}
+        let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+          paramsData = { ...data }
+        } else {
+          paramsData = { ...this.ruleForm }
+        }
+        pageData.pageIndex = this.currentPage
+        pageData.pageSize = this.pageSize
+        const res = await searchAll({ ...pageData, ...paramsData })
+        if (res.code === 1) {
+          this.tableData = res.data
+          this.total = res.count
+          paramsData = {}
+          if (data) {
+            this.$message.success(res.message)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 获取领导数据
+    async getLdList() {
+      const res = await getDicGroupBy()
+      if (res.code === 1) {
+        this.PSRoptions = res.data
+      } else {
+        this.$message('获取批示人数据失败')
+      }
+    },
     // 切换每页条数
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.search()
     },
     // 切换当前页码
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      this.search()
     },
-    // 搜索按钮
-    search() {},
+    selectRadio() {
+      this.ruleForm.sortOrder = this.radio
+      this.search()
+    },
     // 导出按钮
-    exportExcel() {
-      this.exportToExcel()
+    async exportExcel() {
+      // this.exportToExcel()
+      const res = await createExcel({ fileType: this.ruleForm.fileType })
+      console.log(res)
     },
     // excel 数据导出
     exportToExcel() {
@@ -374,18 +205,14 @@ export default {
     },
     // 根据文件类型跳转到详情页
     tableView(row) {
-      switch (row.wjlx) {
-        case '政协提案':
+      switch (row.fileType) {
+        case 8:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/plan', query: { lsh: 123456 } })
+          this.$router.push({ path: '/plan', query: { serialNum: row.serialNum } })
           break
-        case '人大提案':
+        case 9:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/propose', query: { lsh: 123456 } })
-          break
-        default:
-          // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/plan', query: { lsh: 123456 } })
+          this.$router.push({ path: '/propose', query: { serialNum: row.serialNum } })
           break
       }
     },

@@ -448,7 +448,7 @@
               <span v-if="scope.row.fileStatus === 2">已签收</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center">
+          <el-table-column label="操作" width="140" align="center">
             <template slot-scope="scope">
               <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
               <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link>

@@ -434,7 +434,7 @@
           </el-table-column>
           <el-table-column label="操作" width="140" align="center">
             <template slot-scope="scope">
-              <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
+              <el-link type="primary" @click="tableView(scope.row.serialNum)">查看</el-link>
               <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link>
               <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
@@ -466,6 +466,7 @@ export default {
   },
   data() {
     return {
+      serialNum: null,
       // 文件类型
       wj_Type: [
         { value: 1, label: '呈批件' },
@@ -560,6 +561,10 @@ export default {
     }
   },
   created() {
+    this.serialNum = this.$route.query.serialNum
+    if (this.serialNum) {
+      this.tableView(this.serialNum)
+    }
     this.search()
     this.getLdList()
   },
@@ -867,7 +872,7 @@ export default {
         Object.assign(this.$data.bjsj, this.$options.data().bjsj)
         this.HandleForm = {}
         Object.assign(this.$data.trackingData, this.$options.data().trackingData)
-        const res = await searchOne({ serialNum: row.serialNum })
+        const res = await searchOne({ serialNum: row })
         if (res.code === 1) {
           this.$message.success(res.message)
           this.BtnType = 'View'

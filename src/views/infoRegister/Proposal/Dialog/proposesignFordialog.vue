@@ -1,28 +1,9 @@
 <template>
   <div>
-    <el-dialog
-      title="人大建议-签收文件"
-      :visible.sync="sigDialogVisible"
-      :close-on-click-modal="closeonclickmodal"
-      :close-on-press-escape="closeonpressescape"
-      width="30%"
-      center
-    >
-      签字:<el-input
-        type="textarea"
-        :autosize="{ minRows: 5, maxRows: 10 }"
-        placeholder="请输入内容"
-        v-model="textarea1"
-      >
-      </el-input>
+    <el-dialog title="人大建议-签收文件" :visible.sync="sigDialogVisible" :close-on-click-modal="closeonclickmodal" :close-on-press-escape="closeonpressescape" width="30%" center>
+      签字:<el-input v-model="textarea1" type="textarea" :autosize="{ minRows: 5, maxRows: 10 }" placeholder="请输入内容"> </el-input>
       备注：
-      <el-input
-        type="textarea"
-        :autosize="{ minRows: 5, maxRows: 10 }"
-        placeholder="请输入内容"
-        v-model="textarea2"
-      >
-      </el-input>
+      <el-input v-model="textarea2" type="textarea" :autosize="{ minRows: 5, maxRows: 10 }" placeholder="请输入内容"> </el-input>
       <span slot="footer" class="dialog-footer">
         <el-button @click="determine">关 闭</el-button>
       </span>
@@ -33,7 +14,7 @@
 <script>
 export default {
   props: ['sig'],
-  data () {
+  data() {
     return {
       sigDialogVisible: false,
       closeonclickmodal: false,
@@ -43,13 +24,13 @@ export default {
     }
   },
   watch: {
-    sig () {
+    sig() {
       this.sigDialogVisible = this.sig
       console.log(this.sigDialogVisible)
     }
   },
   methods: {
-    determine () {
+    determine() {
       this.sigDialogVisible = false
       this.$emit('setsig', this.sigDialogVisible)
     }

@@ -21,33 +21,31 @@
 
 <script>
 export default {
-  data () {
-    return {
-      date: new Date()
-    }
-  },
-  mounted () {
-    let _this = this // 声明一个变量指向Vue实例this，保证作用域一致
-    this.timer = setInterval(() => {
-      _this.date = new Date() // 修改数据date
-    }, 1000)
-  },
-  beforeDestroy () {
-    if (this.timer) {
-      clearInterval(this.timer) // 在Vue实例销毁前，清除我们的定时器
-    }
-  },
   filters: {
-    formatDate: function (value) {
-      let date = new Date(value)
-      let y = date.getFullYear()
+    formatDate: function(value) {
+      const date = new Date(value)
+      const y = date.getFullYear()
       let MM = date.getMonth() + 1
       MM = MM < 10 ? '0' + MM : MM
       let d = date.getDate()
       d = d < 10 ? '0' + d : d
-      return (
-        y + '<span>年</span>' + MM + '<span>月</span>' + d + '<span>日</span> '
-      )
+      return y + '<span>年</span>' + MM + '<span>月</span>' + d + '<span>日</span> '
+    }
+  },
+  data() {
+    return {
+      date: new Date()
+    }
+  },
+  mounted() {
+    const _this = this // 声明一个变量指向Vue实例this，保证作用域一致
+    this.timer = setInterval(() => {
+      _this.date = new Date() // 修改数据date
+    }, 1000)
+  },
+  beforeDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer) // 在Vue实例销毁前，清除我们的定时器
     }
   }
 }
