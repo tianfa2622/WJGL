@@ -115,7 +115,7 @@ export default {
   },
   methods: {
     getTimeFormat() {
-      console.log(this.registerDate)
+      console.log(this.registerDate.length)
       if (this.registerDate.length > 0) {
         this.ruleForm.registerStartDate = this.registerDate[0]
         this.ruleForm.registerEndDate = this.registerDate[1]

@@ -198,7 +198,7 @@
               </el-col>
               <el-col :span="10">
                 <el-upload action="" :on-remove="handleRemove" :on-exceed="handleExceed" :before-remove="beforeRemove" :multiple="false" :limit="1" :file-list="fileList" :auto-upload="false">
-                  <el-link type="danger">添加附件</el-link>
+                  <el-link type="danger" disabled>添加附件</el-link>
                 </el-upload>
                 <div style="margin-top:20px">
                   <span style="color:#5a81a9;font-size:14px">模拟上传文件.word</span>

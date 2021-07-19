@@ -20,4 +20,4 @@ export const Del = p => delP('/api/cpj/falseDeleteCptOne', p)
 export const getDicGroupBy = () => get('/api/universal/queryDicGroupBy')
 
 // 审核Api
-export const Audit = p => put('/api/cpj/officialCpj', p)
+export const Audit = p => get('/api/cpj/officialCpj', p)
