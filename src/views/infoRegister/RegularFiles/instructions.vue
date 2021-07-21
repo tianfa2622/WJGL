@@ -54,8 +54,8 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="送呈单位：" prop="company">
-                  <el-input v-model="ruleForm.company" placeholder="请选择单位"></el-input>
+                <el-form-item label="送呈单位：" prop="song_company">
+                  <el-input v-model="ruleForm.song_company" placeholder="请选择单位"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -240,7 +240,7 @@
           <el-table-column label="流水号" prop="serial_num" align="center"></el-table-column>
           <el-table-column label="登记时间" prop="creat_date"> </el-table-column>
           <el-table-column label="文号" prop="reference_num" align="center"> </el-table-column>
-          <el-table-column label="送呈单位" prop="company" align="center"> </el-table-column>
+          <el-table-column label="送呈单位" prop="song_company" align="center"> </el-table-column>
           <el-table-column label="来文内容" prop="content"> </el-table-column>
           <el-table-column label="办理情况" prop="banli" align="center">
             <template slot-scope="scope">
@@ -296,7 +296,7 @@ export default {
         creat_date: new Date(),
         phone_name: null,
         content: null,
-        company: null,
+        song_company: null,
         phone: null,
         reference_num: null,
         bmjzyj: null,
@@ -311,7 +311,7 @@ export default {
           { min: 2, max: 5, message: '长度在 2 到 5 个字符', trigger: 'blur' }
         ],
         content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
-        company: [{ required: true, message: '请选择单位', trigger: 'blur' }],
+        song_company: [{ required: true, message: '请选择单位', trigger: 'blur' }],
         creat_date: [{ required: true, message: '请选择日期', trigger: 'blur' }],
         phone: [
           { required: false, trigger: 'blur' },
@@ -372,6 +372,10 @@ export default {
     }
   },
   created() {
+    this.row = this.$route.query.row
+    if (this.row) {
+      this.tableView(this.row)
+    }
     this.search()
     this.getLdList()
   },
@@ -452,6 +456,7 @@ export default {
     },
     // 调取添加接口的方法
     async add(data) {
+      data.file_type = 1
       try {
         const res = await Add({ ...data })
         if (res.code === 1) {
@@ -520,8 +525,12 @@ export default {
           this.disabled = true
           this.$message.success(res.message)
           this.BtnType = 'View'
+          if (res.data.accomPlishes !== null && res.data.accomPlishes.length > 0) {
+            this.bjsj = res.data.accomPlishes[0]
+          }
           this.ruleForm = res.data
-          this.bjsj = this.ruleForm.accomPlishes[0]
+        } else {
+          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)

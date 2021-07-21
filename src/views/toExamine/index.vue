@@ -5,7 +5,7 @@
       <el-card class="box-card">
         <div slot="header" class="clearfix">
           <div class="condition">
-            <div class="condition-col"><span style="margin-left:15px" />送呈单位:<el-input v-model="conditionInputs.company" placeholder="请输入内容" clearable> </el-input></div>
+            <div class="condition-col"><span style="margin-left:15px" />送呈单位:<el-input v-model="conditionInputs.song_company" placeholder="请输入内容" clearable> </el-input></div>
             <div class="condition-col">来文内容:<el-input v-model="conditionInputs.content" placeholder="请输入内容" clearable> </el-input></div>
             <div class="condition-col">登记时间:<el-date-picker v-model="timeData" type="daterange" range-separator="-" value-format="yyyy-MM-dd" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker></div>
             <div class="condition-col">
@@ -27,7 +27,7 @@
           </el-table-column>
           <el-table-column label="登记日期" prop="creat_date" align="center" width="180px"> </el-table-column>
           <el-table-column label="文号" prop="reference_num" align="center" width="180px"> </el-table-column>
-          <el-table-column label="送呈单位" prop="company" align="center" width="180px"> </el-table-column>
+          <el-table-column label="送呈单位" prop="song_company" align="center" width="180px"> </el-table-column>
           <el-table-column label="来文内容" prop="content" align="center"> </el-table-column>
           <el-table-column label="办理情况" align="center" width="180px">
             <template slot-scope="scope">
@@ -85,7 +85,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="送呈单位：">
-                <el-input v-model="ruleForm.company" placeholder="请选择单位"></el-input>
+                <el-input v-model="ruleForm.song_company" placeholder="请选择单位"></el-input>
               </el-form-item>
             </el-col>
           </el-row>

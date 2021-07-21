@@ -12,13 +12,14 @@
       <el-card class="box-card">
         <div class="condition">
           <div class="condition-col">
-            活动时间:<el-select v-model="conditionInputs.hdsj" clearable placeholder="请选择">
+            活动时间:<el-date-picker v-model="ActivityDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+            <!-- <el-select v-model="conditionInputs.hdsj" clearable placeholder="请选择">
               <el-option v-for="item in hdsjSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
-            </el-select>
+            </el-select> -->
           </div>
-          <div class="condition-col">报表标题:<el-input v-model="conditionInputs.bbbt" style="width:300px" placeholder="请输入内容" clearable> </el-input></div>
+          <div class="condition-col">报表标题:<el-input v-model="bbbt" style="width:300px" placeholder="请输入内容" clearable> </el-input></div>
           <div class="condition-col">
-            <el-button @click="search">查询</el-button>
+            <el-button @click="search(ActivityDate)">查询</el-button>
             <el-button @click="exportExcel">导出Excel</el-button>
           </div>
         </div>
@@ -28,9 +29,9 @@
           </el-col>
           <el-col :span="20">
             <el-table :data="tableData" border fit style="width: 100%;height:500px;">
-              <el-table-column label="领导" prop="wjlx" align="center" width="120" :resizable="false"> </el-table-column>
-              <el-table-column label="上午" prop="wjlx" align="center" :resizable="false"> </el-table-column>
-              <el-table-column label="下午" prop="wjlx" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="领导" prop="userName" align="center" width="120" :resizable="false"> </el-table-column>
+              <el-table-column label="上午" prop="forenoon" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="下午" prop="wjlx" align="afternoon" :resizable="false"> </el-table-column>
             </el-table>
           </el-col>
         </el-row>
@@ -40,25 +41,20 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import { searchAll, createExcel } from '@/api/reportForm/leadShaky/allLeadDayForm'
 export default {
   data() {
     return {
-      tableData: [
-        {
-          wjlx: '1'
-        }
-      ],
-      conditionInputs: {
-        hdsj: '',
-        bbbt: ''
-      },
-      hdsjSelect: [],
+      tableData: [],
+      ActivityDate: this.CurrentDate(),
+      bbbt: `所有厅领导每日行程表 (${this.CurrentDate()})`,
+      // hdsjSelect: [],
       tableTitle: `所有厅领导每日行程表 (${this.CurrentDate()})`
     }
   },
   created() {
-    this.conditionInputs.hdsj = this.CurrentDate()
-    this.conditionInputs.bbbt = this.tableTitle
+    this.search()
   },
   methods: {
     // 获取当天日期
@@ -67,7 +63,7 @@ export default {
       const year = now.getFullYear() // 年
       let month = now.getMonth() + 1 // 月
       let day = now.getDate() // 日
-      const seperator = '/' // 分隔符
+      const seperator = '-' // 分隔符
       // 对月份进行处理，1-9月在前面添加一个“0”
       if (month >= 1 && month <= 9) {
         month = '0' + month
@@ -81,11 +77,28 @@ export default {
       return nowDate
     },
     // 查询按钮
-    search() {
-      if (this.conditionInputs.bbbt !== this.tableTitle) {
-        this.tableTitle = `${this.conditionInputs.bbbt} (${this.conditionInputs.hdsj})`
-      } else {
-        this.tableTitle = this.conditionInputs.bbbt
+    async search(data) {
+      try {
+        let day = null
+        if (data) {
+          if (this.bbbt !== '') {
+            this.tableTitle = this.bbbt + '(' + this.CurrentDate() + ')'
+          }
+          day = data
+        } else {
+          day = this.CurrentDate()
+        }
+        const res = await searchAll({ ActivityDate: day })
+        if (res.code === 1) {
+          this.tableData = res.data
+          if (data) {
+            this.$message.success(res.message)
+          }
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
     // 导出按钮

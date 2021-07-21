@@ -25,7 +25,6 @@
 <script>
 import User from './children/systemUser.vue' // 用户管理
 import Role from './children/systemRole.vue' // 角色管理
-// import Equipment from './children/equipment' // 设备管理
 import Dictionary from './children/systemDictionary.vue' // 字典管理
 import Mechanism from './children/systemMechanism.vue' // 组织机构
 import SystemLog from './children/systemLog' // 系统日志
@@ -34,7 +33,6 @@ export default {
     User,
     Role,
     Dictionary,
-    //   Equipment,
     Mechanism,
     SystemLog
   },

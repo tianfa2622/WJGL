@@ -113,7 +113,7 @@
         </el-table-column>
         <el-table-column label="流水号" align="center">
           <template slot-scope="scope">
-            <el-link type="primary" @click="tableEdit(scope.$index, scope.row.serial_num)">{{ scope.row.serial_num }}</el-link>
+            <el-link type="primary" @click="tableEdit(scope.row)">{{ scope.row.serial_num }}</el-link>
           </template>
         </el-table-column>
         <el-table-column label="时间" prop="start_date" align="center"> </el-table-column>
@@ -122,18 +122,16 @@
         <el-table-column label="来文内容" prop="content" width="300px" align="center"> </el-table-column>
         <el-table-column label="参加领导" prop="leadership" align="center">
           <template slot-scope="scope">
-            <div v-for="i in scope.row.leadership" :key="i.leadership_name">
-              <template v-for="j in Ldlist">
-                <span v-if="i.leadership_name === j.id" :key="j.id">{{ j.name }}</span>
-              </template>
-            </div>
+            <template v-for="i in scope.row.leadership">
+              <span :key="i.leadership_name">{{ i.leadership_name_text }}&nbsp;</span>
+            </template>
           </template>
         </el-table-column>
         <el-table-column label="参加人员" prop="participant" align="center"> </el-table-column>
         <el-table-column label="登记人" prop="registrant" align="center"> </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini" @click="signForevent(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" @click="tabeleDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -236,31 +234,31 @@
             </el-col>
           </el-row>
         </div>
+
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px">
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
-              <el-form-item label="流水号：" prop="name">
-                <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                <span>{{ ruleForm.name ? ruleForm.name : 2100082 }}</span>
+              <el-form-item label="流水号：">
+                <span>{{ ruleForm.serial_num }}</span>
               </el-form-item>
             </el-col>
             <el-col :span="10">
-              <el-form-item label="活动类型：" prop="name">
-                <el-select v-model="ruleForm.name" style="width:100%" placeholder="请选择内容">
-                  <el-option v-for="item in options4" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+              <el-form-item label="活动类型：">
+                <el-select v-model="ruleForm.activity_type" style="width:100%" placeholder="请选择内容">
+                  <el-option v-for="item in hdlxSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
-              <el-form-item label="时间：" prop="name">
+              <el-form-item label="时间：">
                 <el-row type="flex" justify="center">
-                  <el-date-picker v-model="date1" style="width:100%" type="daterange" range-separator="——" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd"> </el-date-picker>
+                  <el-date-picker v-model="ruleForm.date1" style="width:100%" type="daterange" range-separator="——" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd"> </el-date-picker>
                 </el-row>
                 <el-row type="flex" style="margin-top:5px" justify="space-between">
                   <el-time-select
-                    v-model="Time1"
+                    v-model="ruleForm.start_hour_date"
                     placeholder="起始时间"
                     :picker-options="{
                       start: '08:30',
@@ -271,13 +269,13 @@
                   </el-time-select>
                   <el-col :span="1"></el-col>
                   <el-time-select
-                    v-model="Time2"
+                    v-model="ruleForm.end_hour_date"
                     placeholder="结束时间"
                     :picker-options="{
                       start: '08:30',
                       step: '00:15',
                       end: '18:30',
-                      minTime: Time1
+                      minTime: start_hour_date
                     }"
                   >
                   </el-time-select>
@@ -285,22 +283,22 @@
               </el-form-item>
             </el-col>
             <el-col :span="10">
-              <el-form-item label="会议地点" prop="name">
+              <el-form-item label="会议地点">
                 <el-row type="flex" justify="space-between" align="middle">
                   <el-col :span="8">
-                    <el-select v-model="location" placeholder="请选择">
-                      <el-option v-for="item in Ldlist" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+                    <el-select v-model="ruleForm.activity_site" placeholder="请选择" @change="searchSubordinate">
+                      <el-option v-for="item in Onelist" :key="item.site" :label="item.site" :value="item.site"> </el-option>
                     </el-select>
                   </el-col>
                   <el-col :span="15">
-                    <el-select v-model="SpecificLocations" style="width:100%" placeholder="请选择" @change="selectLocation">
+                    <el-select v-model="ruleForm.activity_place" style="width:100%" placeholder="请选择">
                       <el-option v-for="item in place" :key="item.place_name" :label="item.place_name" :value="item.place_name"> </el-option>
                     </el-select>
                   </el-col>
                 </el-row>
                 <el-row style="margin-top:5px">
                   <el-col :span="24">
-                    <el-input v-model="input"></el-input>
+                    <el-input v-model="ruleForm.activity_place" disabled></el-input>
                   </el-col>
                 </el-row>
               </el-form-item>
@@ -308,35 +306,38 @@
           </el-row>
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
-              <el-form-item label="内容：" prop="name">
-                <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
+              <el-form-item label="内容：">
+                <el-input v-model="ruleForm.content" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10">
-              <el-form-item label="备注：" prop="name">
-                <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row type="flex" justify="space-around">
-            <el-col :span="10">
-              <el-form-item label="参加领导：" prop="name">
-                <el-input v-model="ruleForm.name" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="10">
-              <el-form-item label="参加人员：" prop="name">
-                <el-input v-model="ruleForm.name"></el-input>
-              </el-form-item>
-              <el-form-item label="参加人数：" prop="name">
-                <el-input v-model="ruleForm.name"></el-input>
+              <el-form-item label="备注：">
+                <el-input v-model="ruleForm.activity_comment" resize="none" type="textarea" :rows="3" placeholder="请输入内容"> </el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
-              <el-form-item label="联系单位：" prop="name">
-                <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select>
+              <el-form-item label="参加领导：">
+                <el-checkbox-group v-model="ruleForm.leadershipList">
+                  <el-checkbox v-for="(ld, index) in Ldlist" :key="index" :label="ld.id" border>{{ ld.name }}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="参加人员：">
+                <el-input v-model="ruleForm.participant"></el-input>
+              </el-form-item>
+              <el-form-item label="参加人数：">
+                <el-input v-model.number="ruleForm.participants_number"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row type="flex" justify="space-around">
+            <el-col :span="10">
+              <el-form-item label="联系单位：">
+                <!-- <el-select v-model="ruleForm.name" style="width:100%" clearable placeholder="请选择单位"> <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option> </el-select> -->
+                <el-input v-model="ruleForm.company" placeholder="请输入联系单位"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10"></el-col>
@@ -344,15 +345,15 @@
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
               <el-form-item label="联系人：">
-                <el-input v-model="ruleForm.name" placeholder="请输入联系人"></el-input>
+                <el-input v-model="ruleForm.phone_name" placeholder="请输入联系人"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10"></el-col>
           </el-row>
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
-              <el-form-item label="联系电话：">
-                <el-input v-model="ruleForm.name" placeholder="请输入联系电话"></el-input>
+              <el-form-item label="联系电话：" prop="phone">
+                <el-input v-model="ruleForm.phone" placeholder="请输入联系电话"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10"></el-col>
@@ -360,7 +361,7 @@
           <el-row type="flex" justify="space-around">
             <el-col :span="10">
               <el-form-item label="传真：">
-                <el-input v-model="ruleForm.name" placeholder="请输入传真"></el-input>
+                <el-input v-model="ruleForm.fax" placeholder="请输入传真"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10"></el-col>
@@ -379,8 +380,7 @@
             <el-col :span="10"></el-col>
             <el-col :span="10">
               <el-form-item label="登记人：">
-                <!-- <el-input v-model="ruleForm.name"></el-input> -->
-                <span>{{ ruleForm.name ? ruleForm.name : '王湘琴' }}</span>
+                <span>{{ ruleForm.registrant }}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -393,6 +393,7 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import { searchOneDirectory, searchTwoDirectory, searchAll, searchOne, AddList, ModifyApi, Del, getDicGroupBy } from '@/api/shakyrun/index'
+import { validatePhoneTwo, validateNumber } from '@/utils/verification'
 export default {
   data() {
     return {
@@ -457,14 +458,42 @@ export default {
       DialogVisible: false,
       EditDialogVisible: false, // 是否显示活动编辑弹出层
       ruleForm: {
-        name: ''
+        // 编辑框数据
+        accessory: null,
+        activity_comment: null,
+        activity_name: null,
+        activity_place: null,
+        activity_site: null,
+        activity_type: null,
+        company: null,
+        content: null,
+        date1: new Date(),
+        date_duan: null,
+        end_date: null,
+        end_hour_date: null,
+        fax: null,
+        leadership: [],
+        leadershipList: [],
+        participant: null,
+        participants_number: null,
+        phone: null,
+        phone_name: null,
+        registrant: null,
+        serial_num: null,
+        start_date: null,
+        start_hour_date: null
       },
-      rules: [],
-      date1: [],
-      Time1: '',
-      Time2: '',
+      rules: {
+        phone: [
+          { required: false, trigger: 'blur' },
+          { validator: validatePhoneTwo, trigger: 'blur' }
+        ],
+        number: [
+          { required: false, trigger: 'blur' },
+          { validator: validateNumber, trigger: 'blur' }
+        ]
+      },
       fileList: [],
-      input: '', // 活动管理选择活动地点框中的输入框
       // 领导数据
       Ldlist: [],
       // DirectoryList: [],
@@ -498,8 +527,11 @@ export default {
       }
     },
     // 一级地点值改变时触发
-    async searchSubordinate() {
-      const res = await searchTwoDirectory({ site: this.location })
+    async searchSubordinate(sitedata) {
+      if (!sitedata) {
+        sitedata = this.location
+      }
+      const res = await searchTwoDirectory({ site: sitedata })
       if (res.code === 1) {
         this.place = res.data.place
       } else {
@@ -701,7 +733,17 @@ export default {
         }
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
-          this.tableDatatwo = res.data.records
+          const tabledata = res.data.records
+          for (let i = 0; i < tabledata.length; i++) {
+            tabledata[i].leadership.forEach(e => {
+              this.Ldlist.forEach(j => {
+                if (e.leadership_name === j.id) {
+                  e.leadership_name_text = j.name
+                }
+              })
+            })
+          }
+          this.tableDatatwo = tabledata
           this.total = res.data.total
           paramsData = {}
           if (data) {
@@ -722,22 +764,78 @@ export default {
       this.currentPage = val
       this.search()
     },
-    // 点击表格流水号弹出编辑
-    tableEdit(index, row) {
-      console.log(index, row)
-      this.EditDialogVisible = true
-    },
     // 表格删除按钮
-    signForevent(index, row) {
-      console.log(index, row)
-      this.tableDatatwo.splice(index, 1)
+    tabeleDel(row) {
+      this.$confirm('此操作将永久删除该条信息, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        // eslint-disable-next-line space-before-function-paren
+        .then(async () => {
+          const res = await Del({ id: row.id })
+          if (res.code === 1) {
+            this.$message.success(res.message)
+            this.search()
+          } else {
+            this.$message.error(res.message)
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 点击表格流水号弹出编辑
+    tableEdit(row) {
+      this.EditDialogVisible = true
+      this.searchOnedata(row)
+    },
+    // 查询单条api
+    async searchOnedata(row) {
+      const res = await searchOne({ id: row.id })
+      if (res.code === 1) {
+        this.searchSubordinate(res.data.activity_site)
+        const arr = []
+        res.data.date1 = [res.data.start_date, res.data.end_date]
+        res.data.leadership.forEach(e => {
+          arr.push(e.leadership_name)
+        })
+        res.data.leadershipList = arr
+        this.ruleForm = res.data
+        console.log(this.ruleForm)
+      }
+    },
+    // 调取修改接口的方法
+    async Modify(data) {
+      try {
+        delete data.leadershipList
+        data.start_date = data.date1[0]
+        data.start_date = data.date1[1]
+        delete data.date1
+        const res = await ModifyApi(data.id, { ...data })
+        if (res.code === 1) {
+          console.log(res)
+          this.$message.success(res.data)
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          this.search()
+        } else {
+          this.$message.error(res.data)
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
     // 关闭按钮
     close() {
       this.EditDialogVisible = false
+      Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
     },
     // 保存按钮
     save() {
+      this.Modify(this.ruleForm)
       this.EditDialogVisible = false
     },
     // 提交按钮

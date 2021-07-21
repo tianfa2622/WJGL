@@ -305,7 +305,7 @@
           </el-table-column>
           <el-table-column label="操作" align="center" :resizable="false">
             <template slot-scope="scope">
-              <el-link type="primary" @click="tableView(scope.row)">查看</el-link>
+              <el-link type="primary" href="" @click="tableView(scope.row)">查看</el-link>
               <el-link type="primary" class="ml_15" @click="tableModify(scope.row)">修改</el-link>
               <el-link type="danger" class="ml_15" @click="tabeleDel(scope.row)">删除</el-link>
             </template>
@@ -434,18 +434,6 @@ export default {
       sigDialogVisible: false,
       sjlwsl: 0,
       logDialogVisible: false, // 显示日志弹出框
-      // 批示数据
-      InstructionBox: [
-        {
-          InstructionsForm: {
-            name: ''
-          }
-        }
-      ],
-      // 办结数据
-      FinishForm: {
-        name: ''
-      },
       // 上传文件列表
       fileList: [],
       // 表格选择项
@@ -491,6 +479,10 @@ export default {
     }
   },
   created() {
+    this.row = this.$route.query.row
+    if (this.row) {
+      this.tableView(this.row)
+    }
     this.search()
     this.getLdList()
   },
@@ -534,6 +526,7 @@ export default {
     },
     // 调取添加接口的方法
     async add(data) {
+      data.file_type = 2
       try {
         const res = await Add({ ...data })
         if (res.code === 1) {
@@ -543,7 +536,7 @@ export default {
           this.BtnType = 'Add'
           this.search()
         } else {
-          // this.$message.error(res.message)
+          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)
@@ -580,9 +573,11 @@ export default {
           this.$message.success(res.message)
           this.BtnType = 'View'
           this.ruleForm = res.data
-          if (this.ruleForm.accomPlishes !== null) {
+          if (this.ruleForm.accomPlishes !== null && this.ruleForm.accomPlishes.length > 0) {
             this.bjsj = this.ruleForm.accomPlishes[0]
           }
+        } else {
+          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)

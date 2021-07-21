@@ -430,18 +430,6 @@ export default {
       sigDialogVisible: false,
       wqrcyjsl: 0,
       logDialogVisible: false, // 显示日志弹出框
-      // 批示数据
-      InstructionBox: [
-        {
-          InstructionsForm: {
-            name: ''
-          }
-        }
-      ],
-      // 办结数据
-      FinishForm: {
-        name: ''
-      },
       // 上传文件列表
       fileList: [],
       // 表格选择项
@@ -487,6 +475,10 @@ export default {
     }
   },
   created() {
+    this.row = this.$route.query.row
+    if (this.row) {
+      this.tableView(this.row)
+    }
     this.search()
     this.getLdList()
   },
@@ -530,6 +522,7 @@ export default {
     },
     // 调取添加接口的方法
     async add(data) {
+      data.file_type = 3
       try {
         const res = await Add({ ...data })
         if (res.code === 1) {
@@ -576,8 +569,10 @@ export default {
           this.$message.success(res.message)
           this.BtnType = 'View'
           this.ruleForm = res.data
-          if (this.ruleForm.accomPlishes !== null) {
+          if (this.ruleForm.accomPlishes !== null && this.ruleForm.accomPlishes.length > 0) {
             this.bjsj = this.ruleForm.accomPlishes[0]
+          } else {
+            this.$message.error(res.message)
           }
         }
       } catch (error) {

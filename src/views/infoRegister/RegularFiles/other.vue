@@ -476,6 +476,10 @@ export default {
     }
   },
   created() {
+    this.row = this.$route.query.row
+    if (this.row) {
+      this.tableView(this.row)
+    }
     this.search()
     this.getLdList()
   },
@@ -519,6 +523,7 @@ export default {
     },
     // 调取添加接口的方法
     async add(data) {
+      data.file_type = 5
       try {
         const res = await Add({ ...data })
         if (res.code === 1) {
@@ -565,9 +570,11 @@ export default {
           this.$message.success(res.message)
           this.BtnType = 'View'
           this.ruleForm = res.data
-          if (this.ruleForm.accomPlishes !== null) {
+          if (this.ruleForm.accomPlishes !== null && this.ruleForm.accomPlishes.length > 0) {
             this.bjsj = this.ruleForm.accomPlishes[0]
           }
+        } else {
+          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)

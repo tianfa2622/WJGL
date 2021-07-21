@@ -4,25 +4,25 @@
       <el-col :span="18">
         <el-form :model="form" inline>
           <el-form-item label="">
-            <el-select v-model="form.state" style="width:150px" placeholder="账号状态">
+            <el-select v-model="form.enabled" style="width:150px" placeholder="账号状态">
               <el-option label="正常" :value="1"></el-option>
               <el-option label="已禁用" :value="0"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="">
-            <el-input v-model="form.str" style="width:300px" placeholder="请输入姓名或警号"></el-input>
+            <el-input v-model="form.keywords" style="width:300px" placeholder="请输入姓名或警号"></el-input>
           </el-form-item>
           <el-form-item label="">
-            <!-- <el-input v-model="form.dw" placeholder="请输入单位"></el-input> -->
-            <el-select v-model="form.dw" placeholder="请选择单位">
+            <el-input v-model="form.organization" placeholder="请输入单位"></el-input>
+            <!-- <el-select v-model="form.organization" placeholder="请选择单位">
               <el-option label="单位一" :value="1"></el-option>
               <el-option label="单位二" :value="0"></el-option>
-            </el-select>
+            </el-select> -->
           </el-form-item>
         </el-form>
       </el-col>
       <el-col :span="4">
-        <el-button type="primary" @click="search">查询</el-button>
+        <el-button type="primary" @click="search(form)">查询</el-button>
         <el-button type="primary" @click="add">新增</el-button>
       </el-col>
     </el-row>
@@ -56,7 +56,7 @@
       </el-col>
     </el-row>
     <el-row type="flex" justify="center" class="mt-20">
-      <el-pagination :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+      <el-pagination :current-page="currentPage" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
     </el-row>
 
     <!-- 弹出层 -->
@@ -118,14 +118,11 @@
 </template>
 
 <script>
+import { searchAll } from '@/api/system/systemUser'
 export default {
   data() {
     return {
-      form: {
-        state: null,
-        str: null,
-        dw: null
-      },
+      form: {},
       tableData: [
         {
           xh: '1',
@@ -153,9 +150,14 @@ export default {
         { label: '管理员', value: 0 }
       ],
       currentPage: 1,
+      pageSize: 10,
+      total: 20,
       title: '',
       dialogVisible: false
     }
+  },
+  created() {
+    this.search()
   },
   methods: {
     // 弹出层关闭
@@ -171,7 +173,35 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`)
     },
-    search() {},
+    // 搜索按钮
+    async search(data) {
+      try {
+        const pageData = {}
+        let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+          paramsData = { ...data }
+        } else {
+          paramsData = { ...this.form }
+        }
+        pageData.current = this.currentPage
+        pageData.size = this.pageSize
+        const res = await searchAll({ ...pageData, ...paramsData })
+        if (res.code === 1) {
+          console.log(res.data)
+          // this.tableData = res.data
+          // this.total = res.count
+          paramsData = {}
+          if (data) {
+            this.$message.success(res.message)
+          }
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
     // 添加
     add() {
       this.title = '添加账号'
