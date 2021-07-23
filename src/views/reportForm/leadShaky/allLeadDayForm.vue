@@ -12,7 +12,7 @@
       <el-card class="box-card">
         <div class="condition">
           <div class="condition-col">
-            活动时间:<el-date-picker v-model="ActivityDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"> </el-date-picker>
+            活动时间:<el-date-picker v-model="ActivityDate" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" @change="selectDate"> </el-date-picker>
             <!-- <el-select v-model="conditionInputs.hdsj" clearable placeholder="请选择">
               <el-option v-for="item in hdsjSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
             </el-select> -->
@@ -81,8 +81,12 @@ export default {
       try {
         let day = null
         if (data) {
-          if (this.bbbt !== '') {
-            this.tableTitle = this.bbbt + '(' + this.CurrentDate() + ')'
+          if (this.bbbt === `所有厅领导每日行程表 (${this.CurrentDate()})` && this.ActivityDate === this.CurrentDate()) {
+            this.tableTitle = this.bbbt
+          } else if (this.bbbt === '') {
+            this.bbbt = `所有厅领导每日行程表 (${this.ActivityDate})`
+          } else {
+            this.tableTitle = this.bbbt
           }
           day = data
         } else {
@@ -101,9 +105,15 @@ export default {
         console.log(error)
       }
     },
+    selectDate() {
+      this.bbbt = `所有厅领导每日行程表 (${this.ActivityDate})`
+    },
     // 导出按钮
     exportExcel() {
-      this.exportToExcel()
+      // this.exportToExcel()
+      // createExcel({ ActivityDate: this.ActivityDate, title: this.tableTitle })
+      const url = `http://192.168.1.105:8086/api/bbldhd/excelQueryAllDayActivity?ActivityDate=${this.ActivityDate}&title=${this.tableTitle}`
+      window.location.href = url
     },
     // excel 数据导出
     exportToExcel() {

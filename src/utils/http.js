@@ -12,8 +12,8 @@ switch (process.env.NODE_ENV) {
     axios.defaults.baseURL = 'http://192.168.1.12:8080'
     break
   default:
-    axios.defaults.baseURL = 'http://192.168.1.105:8086'
-  // axios.defaults.baseURL = 'http://192.168.1.199:8086'
+    // axios.defaults.baseURL = 'http://192.168.1.105:8086'
+    axios.defaults.baseURL = 'http://192.168.1.199:8086'
 }
 
 // 设置超时时间和跨域是否允许携带凭证

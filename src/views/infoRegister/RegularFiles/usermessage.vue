@@ -533,8 +533,6 @@ export default {
           if (this.ruleForm.accomPlishes !== null && this.ruleForm.accomPlishes.length > 0) {
             this.bjsj = this.ruleForm.accomPlishes[0]
           }
-        } else {
-          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)

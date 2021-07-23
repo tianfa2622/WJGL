@@ -529,8 +529,6 @@ export default {
             this.bjsj = res.data.accomPlishes[0]
           }
           this.ruleForm = res.data
-        } else {
-          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)

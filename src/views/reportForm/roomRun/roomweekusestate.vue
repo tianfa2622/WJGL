@@ -12,14 +12,14 @@
       <el-card class="box-card">
         <div class="condition">
           <div class="condition-col">
-            会议地点:<el-select v-model="conditionInputs.hydd" clearable placeholder="请选择">
-              <el-option v-for="item in hyddSelect" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+            会议地点:<el-select v-model="conditionInputs.site" clearable placeholder="请选择">
+              <el-option v-for="item in Onelist" :key="item.site" :label="item.site" :value="item.site"> </el-option>
             </el-select>
           </div>
           <div class="condition-col">活动时间:<el-date-picker v-model="activityTime" type="week" style="width:250px" :picker-options="{ firstDayOfWeek: 1 }" :format="startDate + ' 至 ' + endDate" placeholder="选择周" @change="changeDate"> </el-date-picker></div>
           <div class="condition-col">报表标题:<el-input v-model="conditionInputs.bbbt" style="width:350px" placeholder="请输入内容" clearable> </el-input></div>
           <div class="condition-col">
-            <el-button @click="search">查询</el-button>
+            <el-button @click="search(conditionInputs)">查询</el-button>
             <el-button @click="exportExcel">导出Excel</el-button>
           </div>
         </div>
@@ -28,16 +28,16 @@
             <span class="tableLabel">{{ tableTitle }}</span>
           </el-col>
           <el-col :span="20">
-            <el-table :data="tableData" border fit style="width: 100%;height:500px;" :span-method="objectSpanMethod">
-              <el-table-column label="" prop="hydd" align="center" :resizable="false"> </el-table-column>
-              <el-table-column label="" prop="sxw" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[0].xq + '(' + weekAry[0].rq + ')'" prop="xq1" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[1].xq + '(' + weekAry[1].rq + ')'" prop="xq2" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[2].xq + '(' + weekAry[2].rq + ')'" prop="xq3" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[3].xq + '(' + weekAry[3].rq + ')'" prop="xq4" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[4].xq + '(' + weekAry[4].rq + ')'" prop="xq5" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[5].xq + '(' + weekAry[5].rq + ')'" prop="xq6" align="center" :resizable="false"> </el-table-column>
-              <el-table-column :label="weekAry[6].xq + '(' + weekAry[6].rq + ')'" prop="xq7" align="center" :resizable="false"> </el-table-column>
+            <el-table :data="tableData" border fit style="width: 100%;" height="700" :span-method="objectSpanMethod">
+              <el-table-column label="" prop="userName" align="center" :resizable="false"> </el-table-column>
+              <el-table-column label="" prop="date_duan" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[0].xq + '(' + weekAry[0].rq + ')'" prop="Monday" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[1].xq + '(' + weekAry[1].rq + ')'" prop="Tuesday" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[2].xq + '(' + weekAry[2].rq + ')'" prop="Wednesday" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[3].xq + '(' + weekAry[3].rq + ')'" prop="Thursday" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[4].xq + '(' + weekAry[4].rq + ')'" prop="Friday" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[5].xq + '(' + weekAry[5].rq + ')'" prop="Saturday" align="center" :resizable="false"> </el-table-column>
+              <el-table-column :label="weekAry[6].xq + '(' + weekAry[6].rq + ')'" prop="Sunday" align="center" :resizable="false"> </el-table-column>
             </el-table>
           </el-col>
         </el-row>
@@ -48,77 +48,12 @@
 
 <script>
 import dayjs from 'dayjs'
+// eslint-disable-next-line no-unused-vars
+import { searchAll, searchOneDirectory, createExcel } from '@/api/reportForm/roomRun/roomweekusestate'
 export default {
   data() {
     return {
-      tableData: [
-        {
-          hydd: '厅党委会议室',
-          sxw: '上午',
-          xq1: '1',
-          xq2: '1',
-          xq3: '1',
-          xq4: '1',
-          xq5: '1',
-          xq6: '1',
-          xq7: '1'
-        },
-        {
-          hydd: '厅党委会议室',
-          sxw: '下午',
-          xq1: '1',
-          xq2: '1',
-          xq3: '1',
-          xq4: '1',
-          xq5: '1',
-          xq6: '1',
-          xq7: '1'
-        },
-        {
-          hydd: '厅党委会议室',
-          sxw: '晚上',
-          xq1: '1',
-          xq2: '1',
-          xq3: '1',
-          xq4: '1',
-          xq5: '1',
-          xq6: '1',
-          xq7: '1'
-        },
-        {
-          hydd: '厅务会议室',
-          sxw: '上午',
-          xq1: '1',
-          xq2: '1',
-          xq3: '1',
-          xq4: '1',
-          xq5: '1',
-          xq6: '1',
-          xq7: '1'
-        },
-        {
-          hydd: '厅务会议室',
-          sxw: '下午',
-          xq1: '1',
-          xq2: '1',
-          xq3: '1',
-          xq4: '1',
-          xq5: '1',
-          xq6: '1',
-          xq7: '1'
-        },
-        {
-          hydd: '厅务会议室',
-          sxw: '晚上',
-          xq1: '1',
-          xq2: '1',
-          xq3: '1',
-          xq4: '1',
-          xq5: '1',
-          xq6: '1',
-          xq7: '1'
-        }
-      ],
+      tableData: [],
       hyddSelect: [
         { label: '省委', value: '省委' },
         { label: '省厅', value: '省厅' }
@@ -128,35 +63,54 @@ export default {
       endDate: null,
       weekAry: null,
       conditionInputs: {
+        site: '省政府',
         bbbt: '',
-        startTime: '',
-        endTime: ''
+        start_date: '',
+        end_date: ''
       },
       tableTitle: '',
       position: 0,
-      rowSpanArr: []
+      rowSpanArr: [],
+      Onelist: []
     }
   },
   created() {
     this.getCurrentWeek()
     const weekAry = this.getWeekAry(this.activityTime)
     this.weekAry = weekAry
-    this.getRowSpan()
-    this.tableTitle = this.InitialValue(this.startDate, this.endDate)
-    this.conditionInputs.bbbt = this.tableTitle
+    this.getDirectory()
+    this.conditionInputs.bbbt = this.InitialValue(this.startDate, this.endDate)
+    this.tableTitle = this.conditionInputs.bbbt
+    this.search()
   },
   methods: {
+    // 获取会议地点数据
+    async getDirectory() {
+      const res = await searchOneDirectory()
+      if (res.code === 1) {
+        this.Onelist = res.data
+      } else {
+        this.$message('获取会议地点数据失败！')
+      }
+    },
     // 处理选择周组件的显示内容
     changeDate() {
-      this.startDate = dayjs(this.activityTime)
-        .startOf('week')
-        .day(1)
-        .format('YYYY/MM/DD')
-      this.endDate = dayjs(this.activityTime)
-        .endOf('week')
-        .day(7)
-        .format('YYYY/MM/DD')
-      this.getWeekAry(this.activityTime)
+      if (this.activityTime !== null) {
+        this.startDate = dayjs(this.activityTime)
+          .startOf('week')
+          .day(1)
+          .format('YYYY/MM/DD')
+        this.endDate = dayjs(this.activityTime)
+          .endOf('week')
+          .day(7)
+          .format('YYYY/MM/DD')
+        this.getWeekAry(this.activityTime)
+        this.conditionInputs.bbbt = this.InitialValue(this.startDate, this.endDate)
+        this.conditionInputs.start_date = dayjs(this.startDate).format('YYYY-MM-DD')
+        this.conditionInputs.end_date = dayjs(this.endDate).format('YYYY-MM-DD')
+      } else {
+        this.getCurrentWeek()
+      }
     },
     // 默认获取当前的周数
     getCurrentWeek() {
@@ -167,7 +121,6 @@ export default {
     //  获取当前选中日期的所有日期
     getWeekAry(datestr) {
       const date = new Date(datestr)
-      console.log('1', date)
       let weeknum = date.getDay() // 返回一周某一天的数字
       if (weeknum === 0) {
         weeknum = 7
@@ -207,22 +160,53 @@ export default {
     InitialValue(time1, time2) {
       const str1 = dayjs(time1).format('MM.DD')
       const str2 = dayjs(time2).format('MM.DD')
-      console.log(str1, str2)
       const value = `会议室一周使用表 (${str1}-${str2})`
       return value
     },
     // 查询按钮
-    search() {
-      // this.conditionInputs.bbbt = this.InitialValue(this.activityTime)
-      this.conditionInputs.bbbt = this.InitialValue(this.startDate, this.endDate)
-      if (this.conditionInputs.bbbt !== this.tableTitle && this.conditionInputs.bbbt !== '') {
-        this.tableTitle = this.conditionInputs.bbbt
+    async search(data) {
+      try {
+        let day = {}
+        if (data) {
+          const input = this.InitialValue(this.startDate, this.endDate)
+          if (this.conditionInputs.bbbt === input && this.conditionInputs.bbbt !== '') {
+            this.tableTitle = this.conditionInputs.bbbt
+          } else if (this.conditionInputs.bbbt === '') {
+            this.tableTitle = input
+            this.conditionInputs.bbbt = input
+          } else {
+            this.tableTitle = this.conditionInputs.bbbt
+          }
+          day.start_date = data.start_date
+          day.end_date = data.end_date
+          day.site = data.site
+        } else {
+          this.getCurrentWeek()
+          day = { ...this.conditionInputs }
+          delete day.bbbt
+        }
+        const res = await searchAll({ ...day })
+        if (res.code === 1) {
+          this.tableData = res.data
+          this.getRowSpan()
+          if (data) {
+            this.$message.success(res.message)
+          }
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
       }
       this.weekAry = this.getWeekAry(this.activityTime)
     },
     // 导出按钮
     exportExcel() {
-      this.exportToExcel()
+      // this.exportToExcel()
+      const startDate = this.conditionInputs.start_date
+      const endDate = this.conditionInputs.end_date
+      const url = `http://192.168.1.105:8086/api/bbldhd/excelQueryAllWeekActivitySite?start_date=${startDate}&end_date=${endDate}&title=${this.tableTitle}&site=${this.conditionInputs.site}`
+      window.location.href = url
     },
     // excel 数据导出
     exportToExcel() {
@@ -256,7 +240,7 @@ export default {
           this.rowSpanArr.push(1)
           this.position = 0
         } else {
-          if (item.hydd === this.tableData[index - 1].hydd) {
+          if (item.userName === this.tableData[index - 1].userName) {
             this.rowSpanArr[this.position] += 1 // 领导名称相同，合并到同个数组中
             this.rowSpanArr.push(0)
           } else {
