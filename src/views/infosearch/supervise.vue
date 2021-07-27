@@ -9,7 +9,7 @@
       </div>
 
       <el-card class="box-card">
-        <div slot="header" class="clearfix" style="text-align:center;">
+        <div slot="header" class="clearfix" style="text-align: center">
           <span>督办件</span>
         </div>
         <div class="condition">
@@ -25,15 +25,15 @@
               </el-col>
             </el-row>
             <el-row v-show="ruleForm.fileType === 6" justify="space-between">
-              <topSupervision :bloptions="bloptions" :rule-form="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
+              <topSupervision :bloptions="bloptions" :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
             </el-row>
             <el-row v-show="ruleForm.fileType === 7" justify="space-between">
-              <hallSupervision :bloptions="bloptions" :p-s-roptions="PSRoptions" :rule-form="ruleForm" :options="options" />
+              <hallSupervision :bloptions="bloptions" :p-s-roptions="PSRoptions" :rule-form.sync="ruleForm" :options="options" />
             </el-row>
           </el-form>
 
           <el-row>
-            <el-col :span="12" style="line-height: 50px;">
+            <el-col :span="12" style="line-height: 50px">
               排序方式：
               <el-radio-group v-model="radio" @change="selectRadio">
                 <el-radio :label="1">厅领导</el-radio>
@@ -41,7 +41,7 @@
                 <el-radio :label="3">流水号</el-radio>
               </el-radio-group>
             </el-col>
-            <el-col :span="12" style="text-align: right;">
+            <el-col :span="12" style="text-align: right">
               <el-button plain @click="search(ruleForm)">查询</el-button>
               <el-button plain @click="exportExcel">导出excel</el-button>
             </el-col>
@@ -136,8 +136,8 @@ export default {
             } else {
               e.supervisionNum = '暂无数据'
             }
+            e.fileType = parseInt(e.fileType)
           })
-          console.log(res.data)
           this.tableData = res.data
           this.total = res.count
           paramsData = {}
@@ -203,11 +203,11 @@ export default {
       switch (row.fileType) {
         case 6:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/topSupervision', query: { serialNum: row.serialNum } })
+          this.$router.push({ name: 'topSupervision', params: { serialNum: row.serialNum } })
           break
         case 7:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/hallSupervision', query: { serialNum: row.serialNum } })
+          this.$router.push({ name: 'hallSupervision', params: { serialNum: row.serialNum } })
           break
       }
     }

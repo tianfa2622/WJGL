@@ -360,7 +360,8 @@
 
 <script>
 import SignFordialog from './Dialog/getfilesignFordialog'
-import LogDialog from './LogDialog/getfileDialog'
+// import LogDialog from './LogDialog/getfileDialog'
+import LogDialog from '@/components/LogDialog.vue'
 // eslint-disable-next-line no-unused-vars
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/RegularFiles/getfile'
 import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
@@ -479,7 +480,7 @@ export default {
     }
   },
   created() {
-    this.row = this.$route.query.row
+    this.row = this.$route.params.row
     if (this.row) {
       this.tableView(this.row)
     }

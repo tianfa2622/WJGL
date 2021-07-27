@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import Table from '../../../../components/Table/tablein'
+import Table from './Table/tablein'
 import { searchAll } from '@/api/system/systemLog'
 export default {
   components: {

@@ -181,7 +181,7 @@ export default {
     // 导出按钮
     exportExcel() {
       // this.exportToExcel()
-      const url = `http://192.168.1.105:8086/api/bbldhd/excelQueryAllWeekActivity?start_date=${this.startDate}&end_date=${this.endDate}&title=${this.tableTitle}`
+      const url = '/apiB' + `/api/bbldhd/excelQueryAllWeekActivity?start_date=${this.startDate}&end_date=${this.endDate}&title=${this.tableTitle}`
       window.location.href = url
     },
     // excel 数据导出

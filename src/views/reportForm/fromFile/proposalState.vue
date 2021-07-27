@@ -180,7 +180,7 @@ export default {
       if (this.tableData.length > 0) {
         const startDate = dayjs(this.conditionInputs.registerStartDate).format('YYYY-MM-DD HH:mm:ss')
         const endDate = dayjs(this.conditionInputs.registerEndDate).format('YYYY-MM-DD HH:mm:ss')
-        const url = `http://192.168.1.199:8086/api/FileReport/proposalChartExcel?registerStartDate=${startDate}&registerEndDate=${endDate}&fileType=8`
+        const url = '/apiB' + `/api/FileReport/proposalChartExcel?registerStartDate=${startDate}&registerEndDate=${endDate}&fileType=8`
         window.location.href = url
       } else {
         this.$message.error('数据为空，无法导出！')

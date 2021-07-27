@@ -326,7 +326,8 @@
 
 <script>
 import SignFordialog from './Dialog/usersignFordialog'
-import LogDialog from './LogDialog/usermessageDialog'
+import LogDialog from '@/components/LogDialog.vue'
+// import LogDialog from './LogDialog/usermessageDialog'
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/RegularFiles/usermessage'
 // import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
 import { getProjectNum } from '@/utils/comm'
@@ -436,7 +437,7 @@ export default {
     }
   },
   created() {
-    this.row = this.$route.query.row
+    this.row = this.$route.params.row
     if (this.row) {
       this.tableView(this.row)
     }

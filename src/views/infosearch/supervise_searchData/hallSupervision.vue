@@ -91,22 +91,23 @@ export default {
   },
   methods: {
     getTimeFormat() {
-      if (this.registerDate.length > 0) {
+      if (this.registerDate && this.registerDate.length > 0) {
         this.ruleForm.registerStartDate = this.registerDate[0]
         this.ruleForm.registerEndDate = this.registerDate[1]
       }
-      if (this.completionDate.length > 0) {
+      if (this.completionDate && this.completionDate.length > 0) {
         this.ruleForm.completionStartDate = this.completionDate[0]
         this.ruleForm.completionEndDate = this.completionDate[1]
       }
-      if (this.receivingDate > 0) {
+      if (this.receivingDate && this.receivingDate.length > 0) {
         this.ruleForm.receivingStartDate = this.receivingDate[0]
         this.ruleForm.receivingEndDate = this.receivingDate[1]
       }
-      if (this.instructionsDate.length > 0) {
+      if (this.instructionsDate && this.instructionsDate.length > 0) {
         this.ruleForm.instructionsStartDate = this.instructionsDate[0]
         this.ruleForm.instructionsEndDate = this.instructionsDate[1]
       }
+      this.$emit('update:rule-form', this.ruleForm)
     }
   }
 }

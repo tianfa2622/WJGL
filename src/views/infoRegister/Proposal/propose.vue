@@ -467,7 +467,8 @@
 
 <script>
 import SignFordialog from './Dialog/proposesignFordialog.vue'
-import LogDialog from './LogDialog/propose.vue'
+import LogDialog from '@/components/LogDialog.vue'
+// import LogDialog from './LogDialog/propose.vue'
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/Proposal/plan'
 import { validateTelphone, validatePhone, validateZipCode, validateContacts, validateNumber } from '@/utils/verification'
 import { getProjectNum } from '@/utils/comm'
@@ -580,10 +581,15 @@ export default {
       // 跟踪办结数据
       trackingData: [],
       BtnType: 'Add',
-      disabled: false
+      disabled: false,
+      row: null
     }
   },
   created() {
+    this.row = this.$route.params.serialNum
+    if (this.row) {
+      this.tableView(this.row)
+    }
     this.search()
     this.getLdList()
   },

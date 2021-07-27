@@ -23,7 +23,7 @@ const routes = [
   },
   {
     path: '/login',
-    name: '登录',
+    name: 'login',
     component: () => import('@/views/login/index')
   },
   {
@@ -33,127 +33,127 @@ const routes = [
     children: [
       {
         path: '/index',
-        name: '首页',
+        name: 'index',
         component: () => import('@/views/homepage/index')
       },
       {
         path: '/instructions',
-        name: '呈批件',
+        name: 'instructions',
         component: () => import('@/views/infoRegister/RegularFiles/instructions')
       },
       {
         path: '/getfile',
-        name: '上级来文',
+        name: 'getfile',
         component: () => import('@/views/infoRegister/RegularFiles/getfile')
       },
       {
         path: '/level',
-        name: '平级和下级来文',
+        name: 'level',
         component: () => import('@/views/infoRegister/RegularFiles/level')
       },
       {
         path: '/usermessage',
-        name: '群众来信',
+        name: 'usermessage',
         component: () => import('@/views/infoRegister/RegularFiles/usermessage')
       },
       {
         path: '/other',
-        name: '其他',
+        name: 'other',
         component: () => import('@/views/infoRegister/RegularFiles/other')
       },
       {
         path: '/topSupervision',
-        name: '上级督办件',
+        name: 'topSupervision',
         component: () => import('@/views/infoRegister/Supervision/topSupervision')
       },
       {
         path: '/hallSupervision',
-        name: '厅批督办件',
+        name: 'hallSupervision',
         component: () => import('@/views/infoRegister/Supervision/hallSupervision')
       },
       {
         path: '/plan',
-        name: '政协提案',
+        name: 'plan',
         component: () => import('@/views/infoRegister/Proposal/plan')
       },
       {
         path: '/propose',
-        name: '人大建议',
+        name: 'propose',
         component: () => import('@/views/infoRegister/Proposal/propose')
       },
       {
         path: '/examine',
-        name: '呈批件审核',
+        name: 'examine',
         component: () => import('@/views/toExamine/index')
       },
       {
         path: '/commonlyfile',
-        name: '一般文件',
+        name: 'commonlyfile',
         component: () => import('@/views/infosearch/commonlyfile')
       },
       {
         path: '/supervise',
-        name: '督办件',
+        name: 'supervise',
         component: () => import('@/views/infosearch/supervise')
       },
       {
         path: '/advise',
-        name: '提案建议',
+        name: 'advise',
         component: () => import('@/views/infosearch/advise')
       },
       {
         path: '/shakyrun',
-        name: '活动管理',
+        name: 'shakyrun',
         component: () => import('@/views/shakyrun/index')
       },
       {
         path: '/allLeadDayForm',
-        name: '所有厅领导每日行程表',
+        name: 'allLeadDayForm',
         component: () => import('@/views/reportForm/leadShaky/allLeadDayForm')
       },
       {
         path: '/eachLeadWeekForm',
-        name: '每个厅领导每周行程表',
+        name: 'eachLeadWeekForm',
         component: () => import('@/views/reportForm/leadShaky/eachLeadWeekForm')
       },
       {
         path: '/allLeadWeekForm',
-        name: '所有厅领导每周行程表',
+        name: 'allLeadWeekForm',
         component: () => import('@/views/reportForm/leadShaky/allLeadWeekForm')
       },
       {
         path: '/roomweekusestate',
-        name: '会议室一周使用情况表',
+        name: 'roomweekusestate',
         component: () => import('@/views/reportForm/roomRun/roomweekusestate')
       },
       {
         path: '/instructionsState',
-        name: '呈批件情况一览表',
+        name: 'instructionsState',
         component: () => import('@/views/reportForm/fromFile/instructionsState')
       },
       {
         path: '/circularsState',
-        name: '传阅件情况一览表',
+        name: 'circularsState',
         component: () => import('@/views/reportForm/fromFile/circularsState')
       },
       {
         path: '/superviseState',
-        name: '督办件情况一览表',
+        name: 'superviseState',
         component: () => import('@/views/reportForm/fromFile/superviseState')
       },
       {
         path: '/proposalState',
-        name: '政协提案一览表',
+        name: 'proposalState',
         component: () => import('@/views/reportForm/fromFile/proposalState')
       },
       {
         path: '/NpcState',
-        name: '人大建议一览表',
+        name: 'NpcState',
         component: () => import('@/views/reportForm/fromFile/NpcState')
       },
       {
         path: '/system',
-        name: '系统设置',
+        name: 'system',
         component: () => import('@/views/system/index')
       }
     ]
@@ -171,7 +171,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

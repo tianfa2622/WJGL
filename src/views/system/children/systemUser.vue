@@ -28,7 +28,7 @@
     </el-row>
     <el-row type="flex" justify="space-around">
       <el-col :span="23">
-        <el-table :data="tableData" border style="width: 100%">
+        <el-table :data="tableData" border style="width: 100%" height="500">
           <el-table-column prop="xh" label="序号" width="80"> </el-table-column>
           <el-table-column prop="zh" label="登录账号"> </el-table-column>
           <el-table-column prop="xm" label="姓名"> </el-table-column>

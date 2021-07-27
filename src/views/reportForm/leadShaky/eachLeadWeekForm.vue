@@ -153,7 +153,7 @@ export default {
     // 导出按钮
     exportExcel() {
       // this.exportToExcel()
-      const url = `http://192.168.1.105:8086/api/bbldhd/excelQueryOneWeek?leadership_name=${this.conditionInputs.leadership_name}&title=${this.tableTitle}&start_date=${this.startDate}&end_date=${this.endDate}`
+      const url = '/apiB' + `/api/bbldhd/excelQueryOneWeek?leadership_name=${this.conditionInputs.leadership_name}&title=${this.tableTitle}&start_date=${this.startDate}&end_date=${this.endDate}`
       window.location.href = url
     },
     // excel 数据导出

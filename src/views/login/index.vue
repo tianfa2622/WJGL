@@ -24,13 +24,14 @@
   </div>
 </template>
 <script>
+// import { Login, LoginOut, searchLogin } from '@/api/login/login'
 export default {
   name: 'Login',
   data() {
     return {
       form: {
-        username: 'admin ',
-        password: '123456'
+        username: 'admin',
+        password: 123456
       },
       // 表单验证，需要在 el-form-item 元素中增加 prop 属性
       rules: {
@@ -44,10 +45,13 @@ export default {
       // 为表单绑定验证功能
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log(valid)
-          console.log(this.form.username)
           // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
+          // Login({ ...this.form }).then(res => {
+          // if (res.code === 1) {
+          // localStorage.setItem('token', res.data.token)
           this.$router.push('/home')
+          // }
+          // })
         } else {
           return false
         }

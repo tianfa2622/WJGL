@@ -15,7 +15,7 @@
             <span>呈批件登记</span>
           </div>
           <el-row type="flex" justify="space-around">
-            <el-col :span="5"> <el-button @click="LogBtn">日志</el-button><el-button>二维码打印</el-button> </el-col>
+            <el-col :span="5"> <el-button @click="LogBtn">日志</el-button><el-button @click="BarcodePrint">二维码打印</el-button> </el-col>
             <el-col :span="2">
               <el-button @click="ScanCodeToSign">扫码签收</el-button>
             </el-col>
@@ -227,8 +227,8 @@
             <el-button style="width:150px" @click="search(conditionInputs)">查询</el-button>
           </el-col>
         </el-row>
-        <el-table :data="tableData" style="width: 100%;" border height="500" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="50px"></el-table-column>
+        <el-table :data="tableData" style="width: 100%;" border height="500">
+          <!-- <el-table-column type="selection" width="50px"></el-table-column> -->
           <el-table-column label="序号" type="index" width="50px" align="center"></el-table-column>
           <el-table-column label="文件类型" prop="file_type" align="center">
             <template slot-scope="scope">
@@ -270,12 +270,16 @@
     <SignFordialog :sig="sigDialogVisible" @setsig="getsig"></SignFordialog>
 
     <LogDialog :is-show="logDialogVisible" @SetClose="SetClose" />
+
+    <Barcode :is-show="BarcodeDialogVisible" :barcode-data="barcodeData" @BarcodeSetClose="BarcodeSetClose" />
   </div>
 </template>
 
 <script>
 import SignFordialog from './Dialog/signFordialog'
-import LogDialog from './LogDialog/instructionsDialog'
+import LogDialog from '@/components/LogDialog.vue'
+import Barcode from '@/components/barcode.vue'
+// import LogDialog from './LogDialog/instructionsDialog'
 import { getProjectNum } from '@/utils/comm'
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/RegularFiles/instructions'
 import { validatePhoneTwo, validateContacts } from '@/utils/verification'
@@ -284,6 +288,7 @@ export default {
   components: {
     // 扫码签收
     SignFordialog,
+    Barcode,
     // 日志弹出组件
     LogDialog
   },
@@ -338,6 +343,7 @@ export default {
       Ldlist: [],
       sigDialogVisible: false,
       logDialogVisible: false, // 显示日志弹出框
+      BarcodeDialogVisible: false, // 条形码弹出框
       // // 批示数据
       // InstructionBox: [],
       // // 办结数据
@@ -368,11 +374,12 @@ export default {
       },
       disabled: false,
       BtnType: 'Add',
-      OldData: {}
+      OldData: {},
+      barcodeData: null
     }
   },
   created() {
-    this.row = this.$route.query.row
+    this.row = this.$route.params.row
     if (this.row) {
       this.tableView(this.row)
     }
@@ -424,6 +431,10 @@ export default {
     // 扫码签收
     ScanCodeToSign() {
       this.sigDialogVisible = true
+    },
+    // 条形码打印
+    BarcodePrint() {
+      this.BarcodeDialogVisible = true
     },
     // 保存信息事件
     submitForm(formName) {
@@ -529,6 +540,7 @@ export default {
             this.bjsj = res.data.accomPlishes[0]
           }
           this.ruleForm = res.data
+          this.barcodeData = res.data.serial_num
         }
       } catch (error) {
         console.log(error)
@@ -551,6 +563,7 @@ export default {
             res.data.accomPlishes = []
           }
           this.ruleForm = res.data
+          this.barcodeData = res.data.serial_num
         }
       } catch (error) {
         console.log(error)
@@ -615,6 +628,10 @@ export default {
     SetClose(data) {
       this.logDialogVisible = data
     },
+    // 组件传参->接收参数 关闭条形码
+    BarcodeSetClose(data) {
+      this.BarcodeDialogVisible = data
+    },
     // 上传列表删除
     handleRemove(file, fileList) {
       console.log(file, fileList)
@@ -629,13 +646,7 @@ export default {
       this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
     // 下载附件按钮
-    downTemplate() {},
-
-    // 表格选择项发生变化时
-    handleSelectionChange(val) {
-      console.log(val)
-      this.multipleSelection = val
-    }
+    downTemplate() {}
   }
 }
 </script>

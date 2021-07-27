@@ -465,7 +465,8 @@
 
 <script>
 import SignFordialog from './Dialog/plansignFordialog.vue'
-import LogDialog from './LogDialog/plan.vue'
+// import LogDialog from './LogDialog/plan.vue'
+import LogDialog from '@/components/LogDialog.vue'
 // eslint-disable-next-line no-unused-vars
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/Proposal/plan'
 import { validateTelphone, validatePhone, validateZipCode, validateContacts, validateNumber } from '@/utils/verification'
@@ -579,10 +580,15 @@ export default {
       // 跟踪办结数据
       trackingData: [],
       BtnType: 'Add',
-      disabled: false
+      disabled: false,
+      row: null
     }
   },
   created() {
+    this.row = this.$route.params.serialNum
+    if (this.row) {
+      this.tableView(this.row)
+    }
     this.search()
     this.getLdList()
   },

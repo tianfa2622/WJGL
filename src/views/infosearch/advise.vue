@@ -25,11 +25,11 @@
               </el-col>
             </el-row>
             <el-row v-if="ruleForm.fileType === 8" justify="space-between">
-              <Plan :bloptions="bloptions" :rule-form="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
+              <Plan :bloptions="bloptions" :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
             </el-row>
 
             <el-row v-if="ruleForm.fileType === 9" justify="space-between">
-              <Propose :bloptions="bloptions" :rule-form="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
+              <Propose :bloptions="bloptions" :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
             </el-row>
           </el-form>
           <el-row type="flex" justify="space-between">
@@ -143,6 +143,7 @@ export default {
         pageData.pageSize = this.pageSize
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
+          res.data.fileType = parseInt(res.data.fileType)
           this.tableData = res.data
           this.total = res.count
           paramsData = {}
@@ -208,11 +209,11 @@ export default {
       switch (row.fileType) {
         case 8:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/plan', query: { serialNum: row.serialNum } })
+          this.$router.push({ name: 'plan', params: { serialNum: row } })
           break
         case 9:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/propose', query: { serialNum: row.serialNum } })
+          this.$router.push({ name: 'propose', params: { serialNum: row } })
           break
       }
     },

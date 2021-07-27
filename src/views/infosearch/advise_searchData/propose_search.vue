@@ -115,27 +115,27 @@ export default {
   },
   methods: {
     getTimeFormat() {
-      console.log(this.registerDate.length)
-      if (this.registerDate.length > 0) {
+      if (this.registerDate && this.registerDate.length > 0) {
         this.ruleForm.registerStartDate = this.registerDate[0]
         this.ruleForm.registerEndDate = this.registerDate[1]
       }
-      if (this.completionDate.length > 0) {
+      if (this.completionDate && this.completionDate.length > 0) {
         this.ruleForm.completionStartDate = this.completionDate[0]
         this.ruleForm.completionEndDate = this.completionDate[1]
       }
-      if (this.assignmentDate > 0) {
+      if (this.assignmentDate && this.assignmentDate.length > 0) {
         this.ruleForm.assignmentStartDate = this.assignmentDate[0]
         this.ruleForm.assignmentEndDate = this.assignmentDate[1]
       }
-      if (this.instructionsDate.length > 0) {
+      if (this.instructionsDate && this.instructionsDate.length > 0) {
         this.ruleForm.instructionsStartDate = this.instructionsDate[0]
         this.ruleForm.instructionsEndDate = this.instructionsDate[1]
       }
-      if (this.concludeDate.length > 0) {
+      if (this.concludeDate && this.concludeDate.length > 0) {
         this.ruleForm.concludeStartDate = this.concludeDate[0]
         this.ruleForm.concludeEndDate = this.concludeDate[1]
       }
+      this.$emit('update:rule-form', this.ruleForm)
     }
   }
 }

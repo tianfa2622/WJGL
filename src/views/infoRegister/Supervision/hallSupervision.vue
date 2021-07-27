@@ -451,7 +451,8 @@
 
 <script>
 import SignFordialog from './Dialog/topsupsignFordialog'
-import LogDialog from './LogDialog/hallSupervision.vue'
+// import LogDialog from './LogDialog/hallSupervision.vue'
+import LogDialog from '@/components/LogDialog.vue'
 // eslint-disable-next-line no-unused-vars
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/Supervision/hallSupervision'
 import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
@@ -561,7 +562,7 @@ export default {
     }
   },
   created() {
-    this.serialNum = this.$route.query.serialNum
+    this.serialNum = this.$route.params.serialNum
     if (this.serialNum) {
       this.tableView(this.serialNum)
     }

@@ -337,16 +337,19 @@ export default {
           data.username = this.ruleForm.registrant
           data.banli = 0
           this.Audit(data)
-          this.dialogFormVisible = false
+          // this.dialogFormVisible = false
         })
         .catch(() => {
           this.$message.info('已取消操作！')
         })
     },
     async Audit(data) {
+      const self = this
       const res = await Audit({ ...data })
       if (res.code === 1) {
-        this.$message.success(res.message)
+        this.dialogFormVisible = false
+        this.$message.success(res.data)
+        self.search()
       }
     },
     // 退回文件按钮
@@ -364,7 +367,7 @@ export default {
           data.banli = 2
           data.cause = value
           this.Audit(data)
-          this.dialogFormVisible = false
+          // this.dialogFormVisible = false
           // this.$message({
           //   type: 'success',
           //   message: '退回原因: ' + value

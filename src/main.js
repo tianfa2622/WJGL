@@ -10,6 +10,7 @@ Vue.prototype.XLSX = XLSX
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+// Vue.use(Print)
 
 new Vue({
   router,

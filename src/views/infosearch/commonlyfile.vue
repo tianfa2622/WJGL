@@ -28,19 +28,19 @@
               </el-col>
             </el-row>
             <el-row v-if="file_type === 1" justify="space-between">
-              <instructions :rule-form="ruleForm" :p-s-roptions="PSRoptions" />
+              <instructions :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" />
             </el-row>
             <el-row v-else-if="file_type === 2" justify="space-between">
-              <getfile :rule-form="ruleForm" :p-s-roptions="PSRoptions" />
+              <getfile :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" />
             </el-row>
             <el-row v-else-if="file_type === 3" justify="space-between">
-              <level :rule-form="ruleForm" :p-s-roptions="PSRoptions" />
+              <level :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" />
             </el-row>
             <el-row v-else-if="file_type === 4" justify="space-between">
-              <usermessage :rule-form="ruleForm" :p-s-roptions="PSRoptions" />
+              <usermessage :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" />
             </el-row>
             <el-row v-else-if="file_type === 5" justify="space-between">
-              <other :rule-form="ruleForm" :p-s-roptions="PSRoptions" />
+              <other :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" />
             </el-row>
           </el-form>
           <el-row>
@@ -163,10 +163,8 @@ export default {
         }
         pageData.pageIndex = this.currentPage
         pageData.pageSize = this.pageSize
-        console.log(paramsData)
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
-          console.log(res)
           this.tableData = res.data.records
           this.total = res.data.total
           paramsData = {}
@@ -235,27 +233,27 @@ export default {
       switch (row.file_type) {
         case 1:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/instructions', query: { row: row } })
+          this.$router.push({ name: 'instructions', params: { row: row } })
           break
         case 2:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/getfile', query: { row: row } })
+          this.$router.push({ name: 'getfile', params: { row: row } })
           break
         case 3:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/level', query: { row: row } })
+          this.$router.push({ name: 'level', params: { row: row } })
           break
         case 4:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/usermessage', query: { row: row } })
+          this.$router.push({ name: 'usermessage', params: { row: row } })
           break
         case 5:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/other', query: { row: row } })
+          this.$router.push({ name: 'other', params: { row: row } })
           break
         default:
           // eslint-disable-next-line object-curly-spacing
-          this.$router.push({ path: '/instructions', query: { row: row } })
+          this.$router.push({ name: 'instructions', params: { row: row } })
           break
       }
     }

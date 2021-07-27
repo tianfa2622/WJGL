@@ -205,7 +205,7 @@ export default {
       // this.exportToExcel()
       const startDate = this.conditionInputs.start_date
       const endDate = this.conditionInputs.end_date
-      const url = `http://192.168.1.105:8086/api/bbldhd/excelQueryAllWeekActivitySite?start_date=${startDate}&end_date=${endDate}&title=${this.tableTitle}&site=${this.conditionInputs.site}`
+      const url = '/apiB' + `/api/bbldhd/excelQueryAllWeekActivitySite?start_date=${startDate}&end_date=${endDate}&title=${this.tableTitle}&site=${this.conditionInputs.site}`
       window.location.href = url
     },
     // excel 数据导出

@@ -358,7 +358,8 @@
 
 <script>
 import SignFordialog from './Dialog/levelsignFordialog'
-import LogDialog from './LogDialog/levelDialog'
+import LogDialog from '@/components/LogDialog.vue'
+// import LogDialog from './LogDialog/levelDialog'
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/RegularFiles/level'
 import dayjs from 'dayjs'
 import { getProjectNum } from '@/utils/comm'
@@ -475,7 +476,7 @@ export default {
     }
   },
   created() {
-    this.row = this.$route.query.row
+    this.row = this.$route.params.row
     if (this.row) {
       this.tableView(this.row)
     }

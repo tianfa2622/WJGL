@@ -112,7 +112,7 @@ export default {
     exportExcel() {
       // this.exportToExcel()
       // createExcel({ ActivityDate: this.ActivityDate, title: this.tableTitle })
-      const url = `http://192.168.1.105:8086/api/bbldhd/excelQueryAllDayActivity?ActivityDate=${this.ActivityDate}&title=${this.tableTitle}`
+      const url = '/apiB' + `/api/bbldhd/excelQueryAllDayActivity?ActivityDate=${this.ActivityDate}&title=${this.tableTitle}`
       window.location.href = url
     },
     // excel 数据导出

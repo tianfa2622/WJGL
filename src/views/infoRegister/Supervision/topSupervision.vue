@@ -452,7 +452,8 @@
 
 <script>
 import SignFordialog from './Dialog/topsupsignFordialog'
-import LogDialog from './LogDialog/topSupervision.vue'
+import LogDialog from '@/components/LogDialog.vue'
+// import LogDialog from './LogDialog/topSupervision.vue'
 // eslint-disable-next-line no-unused-vars
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/Supervision/topSupervision'
 import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
@@ -569,7 +570,8 @@ export default {
     }
   },
   created() {
-    this.serialNum = this.$route.query.serialNum
+    this.serialNum = this.$route.params.serialNum
+    console.log(this.$route.params.serialNum)
     if (this.serialNum) {
       this.tableView(this.serialNum)
     }
@@ -857,7 +859,6 @@ export default {
           // if (res.data.sclds === null) {
           //   res.data.sclds = []
           // }
-          this.ruleForm = res.data
           if (res.data.concludes && res.data.concludes.length > 0) {
             this.bjsj = res.data.concludes[0]
           } else {
@@ -873,6 +874,8 @@ export default {
           } else {
             Object.assign(this.$data.trackingData, this.$options.data().trackingData)
           }
+          this.ruleForm = res.data
+          console.log(this.ruleForm)
         }
       } catch (error) {
         console.log(error)
