@@ -216,7 +216,7 @@
 </template>
 
 <script>
-import LogDialog from './LogDialog/toExamine.vue'
+import LogDialog from '@/components/LogDialog.vue'
 // eslint-disable-next-line no-unused-vars
 import { getProjectNum } from '@/utils/comm'
 import { searchAll, getDicGroupBy, searchOne, Audit } from '@/api/infoRegister/RegularFiles/instructions'
@@ -268,7 +268,6 @@ export default {
         pageData.pageIndex = this.currentPage
         pageData.pageSize = this.pageSize
         paramsData = { ...data }
-        console.log(this.timeData)
         if (this.timeData !== null) {
           paramsData.start_date = this.timeData[0]
           paramsData.end_date = this.timeData[1]

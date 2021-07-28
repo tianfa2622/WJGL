@@ -15,7 +15,7 @@
             <span>呈批件登记</span>
           </div>
           <el-row type="flex" justify="space-around">
-            <el-col :span="5"> <el-button @click="LogBtn">日志</el-button><el-button @click="BarcodePrint">二维码打印</el-button> </el-col>
+            <el-col :span="5"> <el-button @click="LogBtn">日志</el-button> <el-button @click="BarcodePrint">条形码打印</el-button> </el-col>
             <el-col :span="2">
               <el-button @click="ScanCodeToSign">扫码签收</el-button>
             </el-col>
@@ -296,8 +296,8 @@ export default {
     return {
       ruleForm: {
         serial_num: getProjectNum(),
-        registrant: '王湘琴',
-        registrant_company: '厅长秘书处',
+        registrant: this.$store.state.registrant,
+        registrant_company: this.$store.state.Registered_unit,
         creat_date: new Date(),
         phone_name: null,
         content: null,
@@ -441,15 +441,19 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.ruleForm.creat_date = dayjs(this.ruleForm.creat_date).format('YYYY-MM-DD HH:mm:ss')
-          if (this.ruleForm.sclds.length > 0) {
+          if (this.ruleForm.sclds && this.ruleForm.sclds.length > 0) {
             this.ruleForm.sclds.forEach(e => {
               e.instructions_data = dayjs(e.instructions_data).format('YYYY-MM-DD HH:mm:ss')
             })
+          } else {
+            this.ruleForm.sclds = null
           }
           if (this.bjsj.comment) {
             const obj = this.bjsj
             obj.conclude_data = dayjs(obj.conclude_data).format('YYYY-MM-DD HH:mm:ss')
             this.ruleForm.accomPlishes.push(obj)
+          } else {
+            this.ruleForm.accomPlishes = null
           }
           switch (this.BtnType) {
             case 'Add':
@@ -553,6 +557,7 @@ export default {
         if (res.code === 1) {
           this.disabled = false
           this.BtnType = 'Modify'
+          console.log(res.data)
           this.OldData = JSON.parse(JSON.stringify(res.data))
           if (res.data.sclds === null) {
             res.data.sclds = []

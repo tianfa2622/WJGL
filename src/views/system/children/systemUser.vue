@@ -29,17 +29,17 @@
     <el-row type="flex" justify="space-around">
       <el-col :span="23">
         <el-table :data="tableData" border style="width: 100%" height="500">
-          <el-table-column prop="xh" label="序号" width="80"> </el-table-column>
-          <el-table-column prop="zh" label="登录账号"> </el-table-column>
-          <el-table-column prop="xm" label="姓名"> </el-table-column>
-          <el-table-column prop="sjh" label="手机号码"> </el-table-column>
-          <el-table-column prop="bgs" label="办公室"> </el-table-column>
-          <el-table-column prop="bgsdh" label="办公室电话"> </el-table-column>
-          <el-table-column prop="sszz" label="所属组织结构"> </el-table-column>
-          <el-table-column prop="ssjs" label="所属角色"> </el-table-column>
-          <el-table-column prop="zt" label="账号状态" align="center" width="100px">
+          <el-table-column type="index" label="序号" width="80"> </el-table-column>
+          <el-table-column prop="username" label="登录账号"> </el-table-column>
+          <el-table-column prop="name" label="姓名"> </el-table-column>
+          <el-table-column prop="phone" label="手机号码"> </el-table-column>
+          <el-table-column prop="office" label="办公室"> </el-table-column>
+          <el-table-column prop="officephone" label="办公室电话"> </el-table-column>
+          <el-table-column prop="organization" label="所属组织结构"> </el-table-column>
+          <el-table-column prop="rolename" label="所属角色"> </el-table-column>
+          <el-table-column prop="enabled" label="账号状态" align="center" width="100px">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.zt" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeState(scope.row)"> </el-switch>
+              <el-switch v-model="scope.row.enabled" class="switch_style" active-value="0" inactive-value="1" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeState(scope.row)"> </el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80px">
@@ -123,19 +123,7 @@ export default {
   data() {
     return {
       form: {},
-      tableData: [
-        {
-          xh: '1',
-          zh: 'zxyz',
-          xm: '张三',
-          sjh: '15211111111',
-          bgs: '',
-          bgsdh: '',
-          sszz: '',
-          ssjs: '',
-          zt: 0
-        }
-      ],
+      tableData: [],
       ruleForm: { name: '', fw: null, jb: null },
       passwordForm: { mm: null },
       rules: {

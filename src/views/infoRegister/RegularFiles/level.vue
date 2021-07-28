@@ -22,7 +22,16 @@
           <el-row type="flex" justify="space-around">
             <el-col :span="5">
               <el-button @click="LogBtn">日志</el-button>
-              <el-button>二维码打印</el-button>
+              <el-popover v-model="visible" placement="top" width="400" trigger="click" title="打印条形码" style="margin-left:10px">
+                <el-row type="flex" justify="center">
+                  <svg id="barcode"></svg>
+                </el-row>
+                <div style="text-align: center; margin: 0">
+                  <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+                  <el-button v-print="printObj" type="primary" size="mini" @click="visible = false">确定</el-button>
+                </div>
+                <el-button slot="reference" :disabled="barcodeData === null">条形码打印</el-button>
+              </el-popover>
             </el-col>
             <el-col :span="4">
               <el-button>传阅单</el-button>
@@ -359,11 +368,11 @@
 <script>
 import SignFordialog from './Dialog/levelsignFordialog'
 import LogDialog from '@/components/LogDialog.vue'
-// import LogDialog from './LogDialog/levelDialog'
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi, searchAlreadyPush, searchCanPush } from '@/api/infoRegister/RegularFiles/level'
 import dayjs from 'dayjs'
 import { getProjectNum } from '@/utils/comm'
 import { validatePhoneTwo, validateContacts, validateNumber } from '@/utils/verification'
+import JsBarcode from 'jsbarcode'
 export default {
   components: {
     // 扫码签收
@@ -373,10 +382,18 @@ export default {
   },
   data() {
     return {
+      barcodeData: null,
+      visible: false,
+      printObj: {
+        id: 'barcode', // 打印的元素id
+        popTitle: '二维码打印', // 打印的标题
+        extraCss: '', // 打印可引入外部的一个css文件
+        extraHead: '' // 打印头部文字
+      },
       ruleForm: {
         serial_num: getProjectNum(),
-        registrant: '王湘琴',
-        registrant_company: '厅长秘书处',
+        registrant: this.$store.state.registrant,
+        registrant_company: this.$store.state.Registered_unit,
         finish_date: new Date(),
         content: null,
         phone_name: null,
@@ -484,6 +501,37 @@ export default {
     this.getLdList()
   },
   methods: {
+    // 生成条形码
+    getBarcode() {
+      let data = 12345
+      if (this.barcodeData) {
+        data = this.barcodeData
+      }
+      const options = {
+        format: 'CODE128',
+        displayValue: false,
+        fontSize: 18,
+        height: 100,
+        width: 2
+      }
+      setTimeout(() => {
+        JsBarcode('#barcode', data, options)
+      }, 0)
+      // window.setTimeout(function() {
+      //   // JsBarcode('#barcode', data, {
+      //   //   format: 'CODE39', // 选择要使用的条形码类型
+      //   //   width: 2, // 设置条之间的宽度
+      //   //   height: 100, // 高度
+      //   //   displayValue: false, // 是否在条形码下方显示文字
+      //   //   // text: data, // 覆盖显示的文本
+      //   //   // font: 'fantasy', // 设置文本的字体
+      //   //   background: '#eee', // 设置条形码的背景
+      //   //   lineColor: '#2196f3', // 设置条和文本的颜色。
+      //   //   margin: 15 // 设置条形码周围的空白边距
+      //   // })
+      //   JsBarcode('#barcode', data, options)
+      // }, 0)
+    },
     // 搜索按钮
     async search(data) {
       try {
@@ -570,9 +618,11 @@ export default {
           this.$message.success(res.message)
           this.BtnType = 'View'
           this.ruleForm = res.data
+          this.barcodeData = res.data.id
           if (this.ruleForm.accomPlishes !== null && this.ruleForm.accomPlishes.length > 0) {
             this.bjsj = this.ruleForm.accomPlishes[0]
           }
+          this.getBarcode()
         }
       } catch (error) {
         console.log(error)
@@ -596,6 +646,8 @@ export default {
             res.data.accomPlishes = []
           }
           this.ruleForm = res.data
+          this.barcodeData = res.data.id
+          this.getBarcode()
         }
       } catch (error) {
         console.log(error)
@@ -677,15 +729,19 @@ export default {
         if (valid) {
           this.ruleForm.creat_date = dayjs(this.ruleForm.creat_date).format('YYYY-MM-DD HH:mm:ss')
           this.ruleForm.finish_date = dayjs(this.ruleForm.finish_date).format('YYYY-MM-DD HH:mm:ss')
-          if (this.ruleForm.sclds.length > 0) {
+          if (this.ruleForm.sclds && this.ruleForm.sclds.length > 0) {
             this.ruleForm.sclds.forEach(e => {
               e.instructions_data = dayjs(e.instructions_data).format('YYYY-MM-DD HH:mm:ss')
             })
+          } else {
+            this.ruleForm.sclds = null
           }
           if (this.bjsj.comment) {
             const obj = this.bjsj
             obj.conclude_data = dayjs(obj.conclude_data).format('YYYY-MM-DD HH:mm:ss')
             this.ruleForm.accomPlishes.push(obj)
+          } else {
+            this.ruleForm.accomPlishes = null
           }
           switch (this.BtnType) {
             case 'Add':

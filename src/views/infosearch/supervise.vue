@@ -17,17 +17,17 @@
             <el-row>
               <el-col :span="24">
                 <el-form-item label="文件类型：">
-                  <el-radio-group v-model="ruleForm.fileType" @change="search()">
+                  <el-radio-group v-model="fileType" @change="hangChangeFileType">
                     <el-radio :label="6" border>上级督办件</el-radio>
                     <el-radio :label="7" border>厅批督办件</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-row v-show="ruleForm.fileType === 6" justify="space-between">
+            <el-row v-show="fileType === 6" justify="space-between">
               <topSupervision :bloptions="bloptions" :rule-form.sync="ruleForm" :p-s-roptions="PSRoptions" :options="options" />
             </el-row>
-            <el-row v-show="ruleForm.fileType === 7" justify="space-between">
+            <el-row v-show="fileType === 7" justify="space-between">
               <hallSupervision :bloptions="bloptions" :p-s-roptions="PSRoptions" :rule-form.sync="ruleForm" :options="options" />
             </el-row>
           </el-form>
@@ -79,10 +79,12 @@
 import topSupervision from './supervise_searchData/topSupervision.vue'
 import hallSupervision from './supervise_searchData/hallSupervision.vue'
 import { searchAll, getDicGroupBy, createExcel } from '@/api/infosearch/supervise/supervise'
+import exportFile from '@/utils/exportFile'
 export default {
   components: { topSupervision, hallSupervision },
   data() {
     return {
+      fileType: 6,
       // 文件类型
       wj_Type: [
         { value: 1, label: '呈批件' },
@@ -115,6 +117,13 @@ export default {
     this.getLdList()
   },
   methods: {
+    // 更改搜索条件时
+    hangChangeFileType() {
+      this.ruleForm = {}
+      this.ruleForm.fileType = this.fileType
+      this.ruleForm.sortOrder = 3
+      this.search()
+    },
     // 搜索按钮
     async search(data) {
       try {
@@ -174,29 +183,14 @@ export default {
     },
     // 导出按钮
     async exportExcel() {
-      // this.exportToExcel()
-      const res = await createExcel({ fileType: this.ruleForm.fileType })
-      console.log(res)
-    },
-    // excel 数据导出
-    exportToExcel() {
-      const tHeader = ['文件类型', '流水号', '督办号', '收文时间', '文号', '来文单位', '来文内容', '要求办结时间', '登记人']
-      const filterVal = ['fileType', 'serialNum', 'supervisionNum', 'receivingTime', 'documentNum', 'unit', 'content', 'completionTime', 'registrant']
-      import('@/components/excel/Export2Excel').then(excel => {
-        const list = this.tableData
-        const data = this.formatJson(filterVal, list)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: '一般文件列表',
-          autoWidth: true,
-          bookType: 'xlsx'
-        })
+      let title = ''
+      this.wj_Type.forEach(e => {
+        if (e.value === this.ruleForm.fileType) {
+          title = e.label
+        }
       })
-    },
-    // 导出数据处理
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
+      const res = await createExcel({ fileType: this.ruleForm.fileType })
+      exportFile.getExcel(res, title)
     },
     // 根据文件类型跳转到详情页
     tableView(row) {

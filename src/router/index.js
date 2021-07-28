@@ -176,4 +176,21 @@ const router = new VueRouter({
   routes
 })
 
+// 全局路由守卫
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  const flag = !!token
+  if (to.path === '/login' || to.path === '/') {
+    if (flag) {
+      next({ path: '/home' })
+    } else {
+      next()
+    }
+  } else if (to.path !== '/login' && flag) {
+    next()
+  } else if (to.path !== '/login' && !flag) {
+    next({ path: '/login' })
+  }
+})
+
 export default router

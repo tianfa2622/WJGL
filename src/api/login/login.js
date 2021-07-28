@@ -8,4 +8,4 @@ export const searchLogin = p => get('/loginController/admin/info', p)
 export const Login = p => post('/loginController/login', p)
 
 // 退出Api
-export const LginOut = () => post('/loginController/logout')
+export const LoginOut = () => post('/loginController/logout')

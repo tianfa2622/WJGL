@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-dialog :visible.sync="barcodeVisible" width="25%" :show-close="false" :close-on-click-modal="false" :destroy-on-close="true" title="条形码" @close="close">
+    <el-dialog :visible.sync="barcodeVisible" width="25%" :show-close="true" :close-on-click-modal="true" :destroy-on-close="true" title="条形码" @close="close">
       <div class="barcode_class">
         <svg id="barcode" ref="barcode" style="width:100%"></svg>
       </div>
       <span slot="footer" style="text-align: center">
         <el-button @click="close">取 消</el-button>
-        <!-- <el-button type="primary" v-print="printObj" @click="close">打 印</el-button> -->
+        <el-button v-print="printObj" type="primary">打 印</el-button>
       </span>
     </el-dialog>
   </div>
@@ -21,7 +21,7 @@ export default {
     return {
       printObj: {
         id: 'barcode', // 打印的元素id
-        popTitle: '', // 打印的标题
+        popTitle: '二维码打印', // 打印的标题
         extraCss: '', // 打印可引入外部的一个css文件
         extraHead: '' // 打印头部文字
       },

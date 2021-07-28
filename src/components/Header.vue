@@ -7,11 +7,12 @@
       </div>
       <div class="head-right">
         <div class="compress">
-          <span>厅长秘书处|王香琴</span>
+          <!-- <span>厅长秘书处|王香琴</span> -->
+          <span>{{ $store.state.registrant }}|{{ $store.state.Registered_unit }}</span>
           <span v-html="$options.filters.formatDate(date)"></span>
           <span><el-link style="color:#fff;">修改密码</el-link></span>
           <span>
-            <el-link type="danger">注销</el-link>
+            <el-link type="danger" @click="loginOutBtn">注销</el-link>
           </span>
         </div>
       </div>
@@ -20,6 +21,8 @@
 </template>
 
 <script>
+import { LoginOut } from '@/api/login/login'
+import router from '@/router'
 export default {
   filters: {
     formatDate: function(value) {
@@ -35,6 +38,8 @@ export default {
   data() {
     return {
       date: new Date()
+      // registrant: this.$store.state.registrant,
+      // Registered_unit: this.$store.state.Registered_unit
     }
   },
   mounted() {
@@ -46,6 +51,16 @@ export default {
   beforeDestroy() {
     if (this.timer) {
       clearInterval(this.timer) // 在Vue实例销毁前，清除我们的定时器
+    }
+  },
+  methods: {
+    async loginOutBtn() {
+      const res = await LoginOut()
+      if (res.code === 1) {
+        localStorage.clear()
+        this.$message.success('退出成功')
+        router.push('/login')
+      }
     }
   }
 }

@@ -24,14 +24,14 @@
   </div>
 </template>
 <script>
-// import { Login, LoginOut, searchLogin } from '@/api/login/login'
+import { Login, searchLogin } from '@/api/login/login'
 export default {
   name: 'Login',
   data() {
     return {
       form: {
-        username: 'admin',
-        password: 123456
+        username: 'wangwu',
+        password: 'wangwu'
       },
       // 表单验证，需要在 el-form-item 元素中增加 prop 属性
       rules: {
@@ -46,16 +46,37 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
-          // Login({ ...this.form }).then(res => {
-          // if (res.code === 1) {
-          // localStorage.setItem('token', res.data.token)
-          this.$router.push('/home')
-          // }
-          // })
+          Login({ ...this.form }).then(res => {
+            if (res.code === 1) {
+              this.$message.success('登录成功')
+              localStorage.setItem('token', `Bearer ${res.data.token}`)
+              this.$router.push('/home')
+              this.searchLogin()
+            } else {
+              this.$message.error('账号或密码错误！')
+            }
+          })
         } else {
           return false
         }
       })
+    },
+    searchLogin() {
+      searchLogin()
+        .then(res => {
+          console.log(res)
+          if (res.code === 1) {
+            this.$store.commit('registrant', res.data.name)
+            this.$store.commit('Registered_unit', res.data.organization)
+            console.log(this.$store.state.registrant)
+            console.log(this.$store.state.Registered_unit)
+          } else {
+            this.$message.error('获取用户信息失败')
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
     }
   }
 }

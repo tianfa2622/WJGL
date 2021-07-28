@@ -99,6 +99,7 @@ import usermessage from './searchDialog/usermessage.vue'
 import other from './searchDialog/other.vue'
 // eslint-disable-next-line no-unused-vars
 import { searchAll, getDicGroupBy, createExcel } from '@/api/infosearch/commonlyfile/commonlyfile'
+import exportFile from '@/utils/exportFile'
 export default {
   components: { instructions, getfile, level, usermessage, other },
   data() {
@@ -151,8 +152,13 @@ export default {
             data.end_conclude_data = data.conclude_data[1]
           }
           if (data.finish_date && data.finish_date.length > 0) {
-            data.start_data = data.finish_date[0]
-            data.end_data = data.finish_date[1]
+            if (data.file_type === 2) {
+              data.start_date = data.finish_date[0]
+              data.end_date = data.finish_date[1]
+            } else {
+              data.start_data = data.finish_date[0]
+              data.end_data = data.finish_date[1]
+            }
           }
           delete data.instructionsDate
           delete data.conclude_data
@@ -205,28 +211,18 @@ export default {
       this.search()
     },
     // 导出按钮
-    exportExcel() {
-      this.exportToExcel()
-    },
-    // excel 数据导出
-    exportToExcel() {
-      const tHeader = ['序号', '文件类型', '流水号', '收文时间', '文号', '来文单位', '来文内容', '办理情况', '登记人']
-      const filterVal = ['wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx', 'wjlx']
-      import('@/components/excel/Export2Excel').then(excel => {
-        const list = this.tableData
-        const data = this.formatJson(filterVal, list)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: '一般文件列表',
-          autoWidth: true,
-          bookType: 'xlsx'
-        })
+    async exportExcel() {
+      const pageData = {}
+      pageData.pageIndex = 0
+      pageData.pageSize = 0
+      let title = ''
+      this.wj_Type.forEach(e => {
+        if (e.value === this.ruleForm.file_type) {
+          title = e.label
+        }
       })
-    },
-    // 导出数据处理
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
+      const res = await createExcel({ ...this.ruleForm, ...pageData })
+      exportFile.getExcel(res, title)
     },
     // 根据文件类型跳转到详情页
     tableView(row) {

@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import {} from '@/api/home/index'
 export default {
   data() {
     return {

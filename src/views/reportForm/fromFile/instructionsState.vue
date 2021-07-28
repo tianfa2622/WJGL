@@ -41,7 +41,7 @@
               <el-table-column label="登记人" prop="registrant" align="center" :resizable="false"> </el-table-column>
               <el-table-column label="电话" prop="phone" align="center" :resizable="false"> </el-table-column>
               <el-table-column label="送呈领导" prop="approved_by" :resizable="false" align="center"> </el-table-column>
-              <el-table-column label="标题" :resizable="false" prop="wjlx" align="center"> </el-table-column>
+              <el-table-column label="来文内容" :resizable="false" prop="content" align="center"> </el-table-column>
               <el-table-column label="备注" :resizable="false" prop="comment" align="center"> </el-table-column>
             </el-table>
           </el-col>
@@ -139,6 +139,18 @@ export default {
         day.registerEndDate = dayjs(day.registerEndDate).format('YYYY-MM-DD')
         const res = await searchAll({ ...day, ...pageData })
         if (res.code === 1) {
+          res.data.forEach(e => {
+            let name = ''
+            if (e.sclds && e.sclds.length > 0) {
+              e.sclds.forEach(j => {
+                name += `${j.approved_by} `
+              })
+            } else {
+              name = '暂无数据'
+            }
+            e.approved_by = name
+          })
+          console.log(name)
           this.tableData = res.data
           if (data) {
             this.$message.success(res.message)

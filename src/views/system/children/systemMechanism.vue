@@ -4,20 +4,20 @@
       <el-col :span="18">
         <el-form :model="form" inline>
           <el-form-item label="">
-            <el-select v-model="form.jglx" style="width:150px" placeholder="机构类型">
+            <el-select v-model="form.type" style="width:150px" placeholder="机构类型">
               <el-option label="一级(省级)" value="01"></el-option>
               <el-option label="二级(市级)" value="02"></el-option>
               <el-option label="三级(区县)" value="03"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="">
-            <el-select v-model="form.qyState" style="width:150px" placeholder="启用状态">
+            <el-select v-model="form.state" style="width:150px" placeholder="启用状态">
               <el-option label="正常" :value="1"></el-option>
               <el-option label="已禁用" :value="0"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="">
-            <el-input v-model="form.str" style="width:300px" placeholder="请输入机构代码或机构名称"></el-input>
+            <el-input v-model="form.id" style="width:300px" placeholder="请输入机构代码或机构名称"></el-input>
           </el-form-item>
         </el-form>
       </el-col>
@@ -29,15 +29,15 @@
     <el-row type="flex" justify="space-around">
       <el-col :span="23">
         <el-table :data="tableData" border style="width: 100%" height="500">
-          <el-table-column prop="xh" label="序号" width="80"> </el-table-column>
+          <el-table-column type="index" label="序号" width="80"> </el-table-column>
           <el-table-column prop="jgdm" label="机构代码" align="center"> </el-table-column>
           <el-table-column prop="px" label="排序" align="center"> </el-table-column>
           <el-table-column prop="jgmc" label="机构名称" align="center"> </el-table-column>
           <el-table-column prop="sjjg" label="上级机构" align="center"> </el-table-column>
-          <el-table-column prop="jglx" label="机构类型" align="center"> </el-table-column>
-          <el-table-column prop="zt" label="启用状态" align="center" width="100px">
+          <el-table-column prop="type" label="机构类型" align="center"> </el-table-column>
+          <el-table-column prop="state" label="启用状态" align="center" width="100px">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.zt" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeCurrentState(scope.row)"> </el-switch>
+              <el-switch v-model="scope.row.state" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeCurrentState(scope.row)"> </el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80px">
@@ -49,7 +49,7 @@
       </el-col>
     </el-row>
     <el-row type="flex" justify="center" class="mt-20">
-      <el-pagination :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100" layout="total, sizes, prev, pager, next, jumper" :total="400" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
+      <el-pagination :current-page="currentPage" :page-sizes="[10, 15, 20, 25]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange"> </el-pagination>
     </el-row>
 
     <!-- 弹出层 -->
@@ -92,25 +92,17 @@
 </template>
 
 <script>
+// eslint-disable-next-line no-unused-vars
+import { searchAll, searchOne, searchScope, searchCode, searchName, ModifyApi, DisableApi, AddList } from '@/api/system/systemMechanism'
 export default {
   data() {
     return {
       form: {
-        qyState: null,
-        str: null,
-        jglx: null
+        id: null,
+        state: null,
+        type: null
       },
-      tableData: [
-        {
-          xh: '1',
-          jgdm: '1',
-          px: '1',
-          jgmc: '1',
-          sjjg: '1',
-          jglx: '1',
-          zt: 0
-        }
-      ],
+      tableData: [],
       ruleForm: { name: '', fw: null, jb: null },
       rules: {
         name: [
@@ -119,15 +111,49 @@ export default {
         ]
       },
       currentPage: 1,
+      pageSize: 10,
+      total: 20,
       title: '',
       dialogVisible: false
     }
+  },
+  mounted() {
+    this.search()
   },
   methods: {
     // 弹出层关闭
     handleClose() {
       this.ruleForm = {}
       this.dialogVisible = false
+    },
+    // 搜索按钮
+    async search(data) {
+      try {
+        const pageData = {}
+        let paramsData = {}
+        if (data) {
+          this.currentPage = 1
+          paramsData = { ...data }
+        } else {
+          paramsData = { ...this.form }
+        }
+        pageData.current = this.currentPage
+        pageData.size = this.pageSize
+        const res = await searchAll({ ...pageData, ...paramsData })
+        if (res.code === 1) {
+          console.log(res.data)
+          // this.tableData = res.data
+          // this.total = res.count
+          paramsData = {}
+          if (data) {
+            this.$message.success(res.message)
+          }
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
     // 切换每页条数
     handleSizeChange(val) {
@@ -137,7 +163,6 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`)
     },
-    search() {},
     // 添加
     add() {
       this.title = '添加组织机构'

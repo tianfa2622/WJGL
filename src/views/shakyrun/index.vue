@@ -29,7 +29,7 @@
           <el-table-column label="上午/下午/晚上" :resizable="false" prop="date_duan" align="center">
             <template slot-scope="scope">
               <span v-if="scope.row.index === tabClickIndex && tabClickLabel == '上午/下午/晚上'">
-                <el-select v-model="scope.row.date_duan" placeholder="请选择内容" @change="inputBlur">
+                <el-select v-model="scope.row.date_duan" placeholder="请选择内容" @change="inputBlur(scope.row.date_duan)">
                   <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"> </el-option>
                 </el-select>
               </span>
@@ -122,8 +122,8 @@
         <el-table-column label="来文内容" prop="content" width="300px" align="center"> </el-table-column>
         <el-table-column label="参加领导" prop="leadership" align="center">
           <template slot-scope="scope">
-            <template v-for="i in scope.row.leadership">
-              <span :key="i.leadership_name">{{ i.leadership_name_text }}&nbsp;</span>
+            <template v-for="(i, index) in scope.row.leadership">
+              <span :key="index">{{ i.leadership_name }}&nbsp;</span>
             </template>
           </template>
         </el-table-column>
@@ -131,7 +131,7 @@
         <el-table-column label="登记人" prop="registrant" align="center"> </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button size="mini" @click="tabeleDel(scope.row)">删除</el-button>
+            <el-button size="mini" type="danger" @click="tabeleDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -155,9 +155,9 @@
               v-model="start_hour_date"
               placeholder="起始时间"
               :picker-options="{
-                start: '08:30',
+                start: start,
                 step: '00:15',
-                end: '18:30'
+                end: end
               }"
             >
             </el-time-select>
@@ -167,9 +167,9 @@
               v-model="end_hour_date"
               placeholder="结束时间"
               :picker-options="{
-                start: '08:30',
+                start: start,
                 step: '00:15',
-                end: '18:30',
+                end: end,
                 minTime: start_hour_date
               }"
               @change="handleChangePeriod"
@@ -254,16 +254,16 @@
             <el-col :span="10">
               <el-form-item label="时间：">
                 <el-row type="flex" justify="center">
-                  <el-date-picker v-model="ruleForm.date1" style="width:100%" type="daterange" range-separator="——" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd"> </el-date-picker>
+                  <el-date-picker v-model="dateTime" style="width:100%" type="daterange" range-separator="——" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" format="yyyy-MM-dd" @change="selectTime"> </el-date-picker>
                 </el-row>
                 <el-row type="flex" style="margin-top:5px" justify="space-between">
                   <el-time-select
                     v-model="ruleForm.start_hour_date"
                     placeholder="起始时间"
                     :picker-options="{
-                      start: '08:30',
+                      start: start,
                       step: '00:15',
-                      end: '18:30'
+                      end: end
                     }"
                   >
                   </el-time-select>
@@ -272,9 +272,9 @@
                     v-model="ruleForm.end_hour_date"
                     placeholder="结束时间"
                     :picker-options="{
-                      start: '08:30',
+                      start: start,
                       step: '00:15',
-                      end: '18:30',
+                      end: end,
                       minTime: start_hour_date
                     }"
                   >
@@ -283,7 +283,12 @@
               </el-form-item>
             </el-col>
             <el-col :span="10">
-              <el-form-item label="会议地点">
+              <el-form-item label="时间段：">
+                <el-select v-model="ruleForm.date_duan" placeholder="请选择内容" @change="inputBlur(ruleForm.date_duan)">
+                  <el-option v-for="(item, index) in options" :key="index" :label="item.label" :value="item.value"> </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="会议地点：">
                 <el-row type="flex" justify="space-between" align="middle">
                   <el-col :span="8">
                     <el-select v-model="ruleForm.activity_site" placeholder="请选择" @change="searchSubordinate">
@@ -397,6 +402,8 @@ import { validatePhoneTwo, validateNumber } from '@/utils/verification'
 export default {
   data() {
     return {
+      start: '08:30',
+      end: '18:00',
       // 活动框表格
       tableData: [
         {
@@ -454,6 +461,7 @@ export default {
       pageSize: 10,
       // 总数
       total: 20,
+      dateTime: new Date(),
       // options: [],
       DialogVisible: false,
       EditDialogVisible: false, // 是否显示活动编辑弹出层
@@ -467,7 +475,6 @@ export default {
         activity_type: null,
         company: null,
         content: null,
-        date1: new Date(),
         date_duan: null,
         end_date: null,
         end_hour_date: null,
@@ -546,13 +553,14 @@ export default {
             let name = ''
             this.leadership.forEach(e => {
               const obj = {}
-              obj.leadership_name = e
-              this.tableData[this.tabClickIndex].leadership.push(obj)
+              obj.leadership_id = e
               this.Ldlist.forEach(j => {
                 if (e === j.id) {
                   name += `${j.name} `
+                  obj.leadership_name = j.name
                 }
               })
+              this.tableData[this.tabClickIndex].leadership.push(obj)
             })
             this.tableData[this.tabClickIndex].leadershiptext = name
             this.leadership = []
@@ -588,6 +596,7 @@ export default {
       row.index = rowIndex
     },
     // 添加明细原因   row 当前行 column 当前列
+    // eslint-disable-next-line no-unused-vars
     tabClick(row, column, cell, event) {
       switch (column.label) {
         case '参加领导':
@@ -625,10 +634,22 @@ export default {
           break
         default:
       }
-      console.log('添加明细原因', this.tabClickIndex, row, column, cell, event)
+      // console.log('添加明细原因', this.tabClickIndex, row, column, cell, event)
     },
     // 处理上午/下午/晚上表格列选择框失去焦点时
-    inputBlur() {
+    inputBlur(data) {
+      if (data) {
+        if (data === '上午') {
+          this.start = '08:00'
+          this.end = '12:00'
+        } else if (data === '下午') {
+          this.start = '12:00'
+          this.end = '18:00'
+        } else {
+          this.start = '18:00'
+          this.end = '24:00'
+        }
+      }
       this.tabClickIndex = null
       this.tabClickLabel = ''
     },
@@ -707,11 +728,16 @@ export default {
       }
       this.AddEvent(this.tableData)
     },
+    selectTime() {
+      this.ruleForm.start_date = this.dateTime[0]
+      this.ruleForm.end_date = this.dateTime[1]
+    },
     // 添加活动api
     async AddEvent(data) {
       const res = await AddList(data)
       if (res.code === 1) {
         this.$message.success(res.message)
+        this.tableData = []
       } else {
         this.$message.error(res.message)
       }
@@ -734,15 +760,15 @@ export default {
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
           const tabledata = res.data.records
-          for (let i = 0; i < tabledata.length; i++) {
-            tabledata[i].leadership.forEach(e => {
-              this.Ldlist.forEach(j => {
-                if (e.leadership_name === j.id) {
-                  e.leadership_name_text = j.name
-                }
-              })
-            })
-          }
+          // for (let i = 0; i < tabledata.length; i++) {
+          //   tabledata[i].leadership.forEach(e => {
+          //     this.Ldlist.forEach(j => {
+          //       if (e.leadership_id === j.id) {
+          //         e.leadership_name_text = j.name
+          //       }
+          //     })
+          //   })
+          // }
           this.tableDatatwo = tabledata
           this.total = res.data.total
           paramsData = {}
@@ -799,30 +825,39 @@ export default {
       if (res.code === 1) {
         this.searchSubordinate(res.data.activity_site)
         const arr = []
-        res.data.date1 = [res.data.start_date, res.data.end_date]
+        this.dateTime = [res.data.start_date, res.data.end_date]
+        // this.dateTime= res.data.end_date
         res.data.leadership.forEach(e => {
-          arr.push(e.leadership_name)
+          arr.push(e.leadership_id)
         })
         res.data.leadershipList = arr
         this.ruleForm = res.data
-        console.log(this.ruleForm)
       }
     },
     // 调取修改接口的方法
     async Modify(data) {
       try {
+        console.log(1)
+        data.start_date = this.dateTime[0]
+        console.log(2)
+        data.start_date = this.dateTime[1]
+        console.log(3)
         delete data.leadershipList
-        data.start_date = data.date1[0]
-        data.start_date = data.date1[1]
-        delete data.date1
+        console.log(4)
         const res = await ModifyApi(data.id, { ...data })
+        console.log(5)
         if (res.code === 1) {
-          console.log(res)
+          console.log(6)
           this.$message.success(res.data)
+          console.log(7)
           Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          console.log(8)
+          this.dateTime = new Date()
+          console.log(9)
           this.search()
         } else {
-          this.$message.error(res.data)
+          console.log(10)
+          this.$message.error(res.message)
         }
       } catch (error) {
         console.log(error)
@@ -832,6 +867,7 @@ export default {
     close() {
       this.EditDialogVisible = false
       Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+      this.dateTime = new Date()
     },
     // 保存按钮
     save() {
