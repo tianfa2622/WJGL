@@ -723,7 +723,7 @@ export default {
           delete this.tableData[i].rqfw
           delete this.tableData[i].sjd
           delete this.tableData[i].leadershiptext
-          this.tableData[i].registrant = 'admin'
+          this.tableData[i].registrant = this.$store.state.registrant
         }
       }
       this.AddEvent(this.tableData)

@@ -35,22 +35,22 @@
           <el-table-column prop="fileType" label="文件类型" align="center"></el-table-column>
           <el-table-column label="三天内到期数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.DueInThreeDays }}</el-link>
+              <el-link type="primary">{{ scope.row.dueInThreeDays }}</el-link>
             </template>
           </el-table-column>
           <el-table-column label="超期应办数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.OverdueDueNumber }}</el-link>
+              <el-link type="primary">{{ scope.row.overdueDueNumber }}</el-link>
             </template></el-table-column
           >
           <el-table-column label="未到期应办数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.UnexpiredNum }}</el-link>
+              <el-link type="primary">{{ scope.row.notYetDueNumber }}</el-link>
             </template></el-table-column
           >
           <el-table-column label="未办结总数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.innumerableTotal }}</el-link>
+              <el-link type="primary">{{ scope.row.totalOutStanding }}</el-link>
             </template></el-table-column
           >
         </el-table>
@@ -64,22 +64,22 @@
           <el-table-column prop="fileType" label="文件类型" align="center"></el-table-column>
           <el-table-column label="十天内到期数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.TenInThreeDays }}</el-link>
+              <el-link type="primary">{{ scope.row.dueInThreeDays }}</el-link>
             </template>
           </el-table-column>
           <el-table-column label="超期应办数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.OverdueNum }}</el-link>
+              <el-link type="primary">{{ scope.row.overdueDueNumber }}</el-link>
             </template></el-table-column
           >
           <el-table-column label="未到期应办数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.UnexpiredNum }}</el-link>
+              <el-link type="primary">{{ scope.row.notYetDueNumber }}</el-link>
             </template></el-table-column
           >
           <el-table-column label="未办结总数" align="center">
             <template slot-scope="scope">
-              <el-link type="primary">{{ scope.row.innumerableTotal }}</el-link>
+              <el-link type="primary">{{ scope.row.totalOutStanding }}</el-link>
             </template></el-table-column
           >
         </el-table>
@@ -89,78 +89,188 @@
 </template>
 
 <script>
-import {} from '@/api/home/index'
+import { searchfiveNotTransferred, searchtenNotTransferred, searchNotTransferredSum, searchfiveDaySjlwNumber, searchtenDaySjlwNumber, searchSjlwNumberCount, searchfiveDayPjXjlwNumber, searchtenDayPjxjlwNumber, searchPjxjlwNumberCount, searchfiveDayQzlxNumber, searchtenDayQzlxNumber, searchQzlxNumberCount, searchfiveDayQtNumber, searchtenDayQtNumber, searchQtNumberCount, searchProposal, searchOversee } from '@/api/home/index'
 export default {
   data() {
     return {
       tableDataOne: [
         {
           fileType: '呈批件',
-          fiveNotTransferred: 1,
-          tenNotTransferred: 2,
-          NotTransferredSum: 3
+          fiveNotTransferred: this.searchfiveNotTransferred(),
+          tenNotTransferred: this.searchtenNotTransferred(),
+          NotTransferredSum: this.searchNotTransferredSum()
         },
         {
           fileType: '上级来文',
-          fiveNotTransferred: 1,
-          tenNotTransferred: 2,
-          NotTransferredSum: 3
+          fiveNotTransferred: this.searchfiveDaySjlwNumber(),
+          tenNotTransferred: this.searchtenDaySjlwNumber(),
+          NotTransferredSum: this.searchSjlwNumberCount()
         },
         {
           fileType: '平级和下级来文',
-          fiveNotTransferred: 1,
-          tenNotTransferred: 2,
-          NotTransferredSum: 3
+          fiveNotTransferred: this.searchfiveDayPjXjlwNumber(),
+          tenNotTransferred: this.searchtenDayPjxjlwNumber(),
+          NotTransferredSum: this.searchPjxjlwNumberCount()
         },
         {
           fileType: '群众来信',
-          fiveNotTransferred: 1,
-          tenNotTransferred: 2,
-          NotTransferredSum: 3
+          fiveNotTransferred: this.searchfiveDayQzlxNumber(),
+          tenNotTransferred: this.searchtenDayQzlxNumber(),
+          NotTransferredSum: this.searchQzlxNumberCount()
         },
         {
           fileType: '其他',
-          fiveNotTransferred: 1,
-          tenNotTransferred: 2,
-          NotTransferredSum: 3
+          fiveNotTransferred: this.searchfiveDayQtNumber(),
+          tenNotTransferred: this.searchtenDayQtNumber(),
+          NotTransferredSum: this.searchQtNumberCount()
         }
       ],
-      tableDataTwo: [
-        {
-          fileType: '上级督办件',
-          DueInThreeDays: 1,
-          OverdueDueNumber: 2,
-          UnexpiredNum: 3,
-          innumerableTotal: 6
-        },
-        {
-          fileType: '厅级督办件',
-          DueInThreeDays: 1,
-          OverdueDueNumber: 2,
-          UnexpiredNum: 3,
-          innumerableTotal: 6
-        }
-      ],
-      tableDataThree: [
-        {
-          fileType: '政协提案',
-          TenInThreeDays: 1,
-          OverdueNum: 2,
-          UnexpiredNum: 3,
-          innumerableTotal: 6
-        },
-        {
-          fileType: '人大建议',
-          TenInThreeDays: 1,
-          OverdueNum: 2,
-          UnexpiredNum: 3,
-          innumerableTotal: 6
-        }
-      ]
+      tableDataTwo: [],
+      tableDataThree: []
     }
   },
-  created() {},
-  methods: {}
+  created() {
+    this.searchProposal()
+    this.searchOversee()
+  },
+  methods: {
+    async searchfiveNotTransferred() {
+      const res = await searchfiveNotTransferred()
+      if (res.code === 1) {
+        this.tableDataOne[0].fiveNotTransferred = res.data
+      } else {
+        this.$message.error('获取呈批件五天以上未办结数失败！')
+      }
+    },
+    async searchtenNotTransferred() {
+      const res = await searchtenNotTransferred()
+      if (res.code === 1) {
+        this.tableDataOne[0].tenNotTransferred = res.data
+      } else {
+        this.$message.error('获取呈批件十天以上未办结数失败！')
+      }
+    },
+    async searchNotTransferredSum() {
+      const res = await searchNotTransferredSum()
+      if (res.code === 1) {
+        this.tableDataOne[0].NotTransferredSum = res.data
+      } else {
+        this.$message.error('获取呈批件未办结总数失败！')
+      }
+    },
+    async searchfiveDaySjlwNumber() {
+      const res = await searchfiveDaySjlwNumber()
+      if (res.code === 1) {
+        this.tableDataOne[1].fiveNotTransferred = res.data
+      } else {
+        this.$message.error('获取上级来文五天以上未办结数失败！')
+      }
+    },
+    async searchtenDaySjlwNumber() {
+      const res = await searchtenDaySjlwNumber()
+      if (res.code === 1) {
+        this.tableDataOne[1].tenNotTransferred = res.data
+      } else {
+        this.$message.error('获取上级来文十天以上未办结数失败！')
+      }
+    },
+    async searchSjlwNumberCount() {
+      const res = await searchSjlwNumberCount()
+      if (res.code === 1) {
+        this.tableDataOne[1].NotTransferredSum = res.data
+      } else {
+        this.$message.error('获取上级来文未办结总数失败！')
+      }
+    },
+    async searchfiveDayPjXjlwNumber() {
+      const res = await searchfiveDayPjXjlwNumber()
+      if (res.code === 1) {
+        this.tableDataOne[2].fiveNotTransferred = res.data
+      } else {
+        this.$message.error('获取平级和下级来文五天以上未办结数失败！')
+      }
+    },
+    async searchtenDayPjxjlwNumber() {
+      const res = await searchtenDayPjxjlwNumber()
+      if (res.code === 1) {
+        this.tableDataOne[2].tenNotTransferred = res.data
+      } else {
+        this.$message.error('获取平级和下级来文十天以上未办结数失败！')
+      }
+    },
+    async searchPjxjlwNumberCount() {
+      const res = await searchPjxjlwNumberCount()
+      if (res.code === 1) {
+        this.tableDataOne[2].NotTransferredSum = res.data
+      } else {
+        this.$message.error('获取平级和下级来文未办结总数失败！')
+      }
+    },
+    async searchfiveDayQzlxNumber() {
+      const res = await searchfiveDayQzlxNumber()
+      if (res.code === 1) {
+        this.tableDataOne[3].fiveNotTransferred = res.data
+      } else {
+        this.$message.error('获取群众来信五天以上未办结数失败！')
+      }
+    },
+    async searchtenDayQzlxNumber() {
+      const res = await searchtenDayQzlxNumber()
+      if (res.code === 1) {
+        this.tableDataOne[3].tenNotTransferred = res.data
+      } else {
+        this.$message.error('获取群众来信十天以上未办结数失败！')
+      }
+    },
+    async searchQzlxNumberCount() {
+      const res = await searchQzlxNumberCount()
+      if (res.code === 1) {
+        this.tableDataOne[3].NotTransferredSum = res.data
+      } else {
+        this.$message.error('获取群众来信未办结总数失败！')
+      }
+    },
+    async searchfiveDayQtNumber() {
+      const res = await searchfiveDayQtNumber()
+      if (res.code === 1) {
+        this.tableDataOne[4].fiveNotTransferred = res.data
+      } else {
+        this.$message.error('获取其他文件五天以上未办结数失败！')
+      }
+    },
+    async searchtenDayQtNumber() {
+      const res = await searchtenDayQtNumber()
+      if (res.code === 1) {
+        this.tableDataOne[4].tenNotTransferred = res.data
+      } else {
+        this.$message.error('获取其他文件十天以上未办结数失败！')
+      }
+    },
+    async searchQtNumberCount() {
+      const res = await searchQtNumberCount()
+      if (res.code === 1) {
+        this.tableDataOne[4].NotTransferredSum = res.data
+      } else {
+        this.$message.error('获取其他文件未办结总数失败！')
+      }
+    },
+    async searchProposal() {
+      const res = await searchProposal()
+      if (res.code === 1) {
+        this.tableDataTwo.push(res.data.map1)
+        this.tableDataTwo.push(res.data.map2)
+        console.log(res)
+      }
+    },
+    async searchOversee() {
+      const res = await searchOversee()
+      if (res.code === 1) {
+        console.log(res)
+        this.tableDataThree.push(res.data.map1)
+        this.tableDataThree.push(res.data.map2)
+      }
+    }
+  }
 }
 </script>
 

@@ -12,7 +12,7 @@ switch (process.env.NODE_ENV) {
     axios.defaults.baseURL = 'http://192.168.1.12:8080'
     break
   default:
-    axios.defaults.baseURL = '/apiB'
+    axios.defaults.baseURL = '/apiA'
   // axios.defaults.baseURL = 'http://192.168.1.199:8086'
 }
 

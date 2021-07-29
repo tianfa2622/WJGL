@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { LoginOut } from '@/api/login/login'
+import { LoginOut, searchLogin } from '@/api/login/login'
 import router from '@/router'
 export default {
   filters: {
@@ -41,6 +41,20 @@ export default {
       // registrant: this.$store.state.registrant,
       // Registered_unit: this.$store.state.Registered_unit
     }
+  },
+  created() {
+    searchLogin()
+      .then(res => {
+        if (res.code === 1) {
+          this.$store.commit('registrant', res.data.name)
+          this.$store.commit('Registered_unit', res.data.organization)
+        } else {
+          this.$message.error('获取用户信息失败')
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
   },
   mounted() {
     const _this = this // 声明一个变量指向Vue实例this，保证作用域一致

@@ -5,15 +5,13 @@
         <el-form :model="form" inline>
           <el-form-item label="">
             <el-select v-model="form.type" style="width:150px" placeholder="机构类型">
-              <el-option label="一级(省级)" value="01"></el-option>
-              <el-option label="二级(市级)" value="02"></el-option>
-              <el-option label="三级(区县)" value="03"></el-option>
+              <el-option v-for="t in options" :key="t.value" :label="t.label" :value="t.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="">
             <el-select v-model="form.state" style="width:150px" placeholder="启用状态">
-              <el-option label="正常" :value="1"></el-option>
-              <el-option label="已禁用" :value="0"></el-option>
+              <el-option label="启用" :value="0"></el-option>
+              <el-option label="已禁用" :value="1"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="">
@@ -22,7 +20,7 @@
         </el-form>
       </el-col>
       <el-col :span="4">
-        <el-button type="primary" @click="search">查询</el-button>
+        <el-button type="primary" @click="search(form)">查询</el-button>
         <el-button type="primary" @click="add">新增</el-button>
       </el-col>
     </el-row>
@@ -30,14 +28,20 @@
       <el-col :span="23">
         <el-table :data="tableData" border style="width: 100%" height="500">
           <el-table-column type="index" label="序号" width="80"> </el-table-column>
-          <el-table-column prop="jgdm" label="机构代码" align="center"> </el-table-column>
-          <el-table-column prop="px" label="排序" align="center"> </el-table-column>
-          <el-table-column prop="jgmc" label="机构名称" align="center"> </el-table-column>
-          <el-table-column prop="sjjg" label="上级机构" align="center"> </el-table-column>
-          <el-table-column prop="type" label="机构类型" align="center"> </el-table-column>
+          <el-table-column prop="id" label="机构代码" align="center"> </el-table-column>
+          <el-table-column prop="groupNum" label="排序" align="center"> </el-table-column>
+          <el-table-column prop="name" label="机构名称" align="center"> </el-table-column>
+          <el-table-column prop="parentOrganization" label="上级机构" align="center"> </el-table-column>
+          <el-table-column prop="type" label="机构类型" align="center">
+            <template slot-scope="scope">
+              <template v-for="i in options">
+                <span v-if="scope.row.type === i.value" :key="i.value">{{ i.label }}</span>
+              </template>
+            </template>
+          </el-table-column>
           <el-table-column prop="state" label="启用状态" align="center" width="100px">
             <template slot-scope="scope">
-              <el-switch v-model="scope.row.state" class="switch_style" active-value="1" inactive-value="0" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeCurrentState(scope.row)"> </el-switch>
+              <el-switch v-model="scope.row.state" class="switch_style" :active-value="0" :inactive-value="1" active-text="已启用" inactive-text="已禁用" active-color="#13ce66" inactive-color="#ff4949" @change="ChangeCurrentState(scope.row)"> </el-switch>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" width="80px">
@@ -57,29 +61,27 @@
       <!-- 添加/修改 -->
       <el-row>
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules" label-width="100px">
-          <el-form-item label="机构登记" prop="name">
-            <el-select v-model="ruleForm.name" placeholder="请选择机构">
-              <el-option label="上级单位" value="01"></el-option>
-              <el-option label="本级单位" value="02"></el-option>
-              <el-option label="下级单位" value="03"></el-option>
+          <el-form-item label="机构类型" prop="type">
+            <el-select v-model="ruleForm.type" placeholder="请选择机构" @change="changeType">
+              <el-option v-for="t in options" :key="t.value" :label="t.label" :value="t.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="上级机构" prop="name">
-            <el-select v-model="ruleForm.name" style="width:100%" placeholder="请选择上级机构">
-              <el-option label="湖南省公安厅" :value="43010000000"></el-option>
+            <el-select v-model="ruleForm.parentOrganization" style="width:100%" placeholder="请选择上级机构" :disabled="ruleForm.type === 1" @change="changeTypecode">
+              <el-option v-for="(t, index) in topTypeName" :key="index" :label="t.label" :value="t.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="上级代码" prop="name">
-            <el-input v-model="ruleForm.name" disabled></el-input>
+            <el-input v-model="ruleForm.parentId" disabled></el-input>
           </el-form-item>
           <el-form-item label="机构名称" prop="name">
             <el-input v-model.number="ruleForm.name" placeholder="请输入组织机构名称"></el-input>
           </el-form-item>
           <el-form-item label="机构代码" prop="name">
-            <el-input v-model.number="ruleForm.name" placeholder="请输入组织机构代码"></el-input>
+            <el-input v-model.number="ruleForm.id" placeholder="请输入组织机构代码"></el-input>
           </el-form-item>
           <el-form-item label="机构排序" prop="name">
-            <el-input v-model="ruleForm.name" placeholder="请输入机构排序"></el-input>
+            <el-input v-model.number="ruleForm.groupNum" placeholder="请输入机构排序"></el-input>
           </el-form-item>
         </el-form>
       </el-row>
@@ -103,18 +105,27 @@ export default {
         type: null
       },
       tableData: [],
-      ruleForm: { name: '', fw: null, jb: null },
+      ruleForm: { type: null, parentOrganization: null, parentId: null, name: '', id: null, groupNum: null },
       rules: {
         name: [
           // { required: true, message: '请输入活动名称', trigger: 'blur' },
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
       },
+      options: [
+        { label: '一级(省级)', value: 1 },
+        { label: '二级(市级)', value: 2 },
+        { label: '三级(区县)', value: 3 }
+      ],
       currentPage: 1,
       pageSize: 10,
       total: 20,
       title: '',
-      dialogVisible: false
+      dialogVisible: false,
+      topDisabled: false,
+      topTypeName: [],
+      topTypeCode: [],
+      BtnType: null
     }
   },
   mounted() {
@@ -141,9 +152,13 @@ export default {
         pageData.size = this.pageSize
         const res = await searchAll({ ...pageData, ...paramsData })
         if (res.code === 1) {
-          console.log(res.data)
-          // this.tableData = res.data
-          // this.total = res.count
+          res.data.records.forEach(e => {
+            if (e.parentOrganization === null || e.parentOrganization === '') {
+              e.parentOrganization = '暂无数据'
+            }
+          })
+          this.tableData = res.data.records
+          this.total = res.data.total
           paramsData = {}
           if (data) {
             this.$message.success(res.message)
@@ -157,31 +172,118 @@ export default {
     },
     // 切换每页条数
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.pageSize = val
+      this.search()
     },
     // 切换当前页码
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      this.search()
+    },
+    // 根据机构类型获取机构名称
+    async getsearchName(data) {
+      this.topTypeName = []
+      const res = await searchName({ type: data })
+      if (res.code === 1) {
+        if (res.data[0] === null) {
+          this.topDisabled = true
+        } else {
+          res.data.forEach(e => {
+            const obj = {}
+            obj.label = e.parentOrganization
+            obj.value = e.parentOrganization
+            this.topTypeName.push(obj)
+          })
+        }
+      }
+    },
+    // 根绝机构名称获取机构代码
+    async getsearchCode(data) {
+      const res = await searchCode({ name: data })
+      if (res.code === 1) {
+        this.ruleForm.parentId = res.data
+      }
+    },
+    changeTypecode() {
+      this.getsearchCode(this.ruleForm.parentOrganization)
+    },
+    changeType() {
+      this.getsearchName(this.ruleForm.type)
     },
     // 添加
     add() {
+      this.BtnType = 'Add'
       this.title = '添加组织机构'
       this.dialogVisible = true
     },
     // 修改
-    modify(row) {
-      console.log(row)
-      this.title = '修改组织机构'
-      this.dialogVisible = true
+    async modify(row) {
+      try {
+        this.title = '修改组织机构'
+        this.dialogVisible = true
+        const res = await searchOne({ number: row.number })
+        if (res.code === 1) {
+          this.BtnType = 'Modify'
+          this.ruleForm = res.data
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
     // 表格项状态改变
-    ChangeCurrentState(row) {
-      console.log(row)
+    async ChangeCurrentState(row) {
+      const res = await DisableApi({ number: row.number, state: row.state })
+      if (res.code === 1) {
+        this.$message.success(res.message)
+      } else {
+        this.$message.error(res.message)
+      }
     },
     // 弹出框添加按钮
     confirmAdd() {
-      this.dialogVisible = false
-      this.ruleForm = {}
+      switch (this.BtnType) {
+        case 'Add':
+          this.addList(this.ruleForm)
+          break
+        case 'Modify':
+          this.ModifyList(this.ruleForm)
+          break
+      }
+      // this.dialogVisible = false
+      // this.ruleForm = {}
+    },
+    // 调取添加接口的方法
+    async addList(data) {
+      try {
+        const res = await AddList({ ...data })
+        if (res.code === 1) {
+          this.$message.success(res.message)
+          this.dialogVisible = false
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          this.search()
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    // 调取添加接口的方法
+    async ModifyList(data) {
+      try {
+        const res = await ModifyApi({ ...data })
+        if (res.code === 1) {
+          this.BtnType = 'Modify'
+          this.$message.success(res.message)
+          this.dialogVisible = false
+          Object.assign(this.$data.ruleForm, this.$options.data().ruleForm)
+          this.search()
+        } else {
+          this.$message.error(res.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }

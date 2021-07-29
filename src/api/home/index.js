@@ -62,14 +62,7 @@ export const searchQtFileStatusZero = () => get('/api/homePage/QtFileStatusZero'
 // 获取其他未办结总数
 export const searchQtNumberCount = () => get('/api/homePage/QtNumberCount')
 
-// 没有
-// 获取未到期应办数信息
-export const searchUnexpiredNum = () => get('/api/homePage/fiveDayCpjNumber')
-// 获取未办结总数信息
-export const searchinnumerableTotal = () => get('/api/homePage/fiveDayCpjNumber')
-// 获取提案超期应办数信息
-export const searchProposalOverdueNum = () => get('/api/homePage/fiveDayCpjNumber')
-// 获取提案未到期应办数信息
-export const searchProposalUnexpiredNum = () => get('/api/homePage/fiveDayCpjNumber')
-// 获取提案未办结总数信息
-export const searchProposalinnumerableTotal = () => get('/api/homePage/fiveDayCpjNumber')
+// 提案建议数据统计
+export const searchProposal = () => get('/api/adminHomePage/proposalTimeStatistics')
+// 督办件数据统计
+export const searchOversee = () => get('/api/adminHomePage/supervisionTimeStatistics')
