@@ -15,7 +15,19 @@
             <span>呈批件登记</span>
           </div>
           <el-row type="flex" justify="space-around">
-            <el-col :span="5"> <el-button @click="LogBtn">日志</el-button> <el-button @click="BarcodePrint">条形码打印</el-button> </el-col>
+            <el-col :span="5">
+              <el-button @click="LogBtn">日志</el-button>
+              <el-popover v-model="visible" placement="top" width="400" trigger="click" title="打印条形码" style="margin-left:10px">
+                <el-row type="flex" justify="center">
+                  <svg id="barcode"></svg>
+                </el-row>
+                <div style="text-align: center; margin: 0">
+                  <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+                  <el-button v-print="printObj" type="primary" size="mini" @click="visible = false">确定</el-button>
+                </div>
+                <el-button slot="reference" :disabled="barcodeData === null">条形码打印</el-button>
+              </el-popover>
+            </el-col>
             <el-col :span="2">
               <el-button @click="ScanCodeToSign">扫码签收</el-button>
             </el-col>
@@ -270,25 +282,22 @@
     <SignFordialog :sig="sigDialogVisible" @setsig="getsig"></SignFordialog>
 
     <LogDialog :is-show="logDialogVisible" @SetClose="SetClose" />
-
-    <Barcode :is-show="BarcodeDialogVisible" :barcode-data="barcodeData" @BarcodeSetClose="BarcodeSetClose" />
   </div>
 </template>
 
 <script>
 import SignFordialog from './Dialog/signFordialog'
 import LogDialog from '@/components/LogDialog.vue'
-import Barcode from '@/components/barcode.vue'
 // import LogDialog from './LogDialog/instructionsDialog'
 import { getProjectNum } from '@/utils/comm'
 import { searchAll, Add, Del, getDicGroupBy, searchOne, ModifyApi } from '@/api/infoRegister/RegularFiles/instructions'
 import { validatePhoneTwo, validateContacts } from '@/utils/verification'
 import dayjs from 'dayjs'
+import JsBarcode from 'jsbarcode'
 export default {
   components: {
     // 扫码签收
     SignFordialog,
-    Barcode,
     // 日志弹出组件
     LogDialog
   },
@@ -308,7 +317,9 @@ export default {
         comment: null,
         sclds: [],
         accomPlishes: [],
-        file_type: 1
+        file_type: 1,
+        visible: false,
+        barcodeData: null
       },
       rules: {
         phone_name: [
@@ -343,7 +354,6 @@ export default {
       Ldlist: [],
       sigDialogVisible: false,
       logDialogVisible: false, // 显示日志弹出框
-      BarcodeDialogVisible: false, // 条形码弹出框
       // // 批示数据
       // InstructionBox: [],
       // // 办结数据
@@ -387,6 +397,33 @@ export default {
     this.getLdList()
   },
   methods: {
+    getBarcode() {
+      let data = 12345
+      if (this.barcodeData) {
+        data = this.barcodeData
+      }
+      const options = {
+        format: 'CODE128',
+        displayValue: false,
+        fontSize: 18,
+        height: 100,
+        width: 2
+      }
+      window.setTimeout(function() {
+        // JsBarcode('#barcode', data, {
+        //   format: 'CODE39', // 选择要使用的条形码类型
+        //   width: 2, // 设置条之间的宽度
+        //   height: 100, // 高度
+        //   displayValue: false, // 是否在条形码下方显示文字
+        //   // text: data, // 覆盖显示的文本
+        //   // font: 'fantasy', // 设置文本的字体
+        //   background: '#eee', // 设置条形码的背景
+        //   lineColor: '#2196f3', // 设置条和文本的颜色。
+        //   margin: 15 // 设置条形码周围的空白边距
+        // })
+        JsBarcode('#barcode', data, options)
+      }, 0)
+    },
     // 搜索按钮
     async search(data) {
       try {
@@ -431,10 +468,6 @@ export default {
     // 扫码签收
     ScanCodeToSign() {
       this.sigDialogVisible = true
-    },
-    // 条形码打印
-    BarcodePrint() {
-      this.BarcodeDialogVisible = true
     },
     // 保存信息事件
     submitForm(formName) {
@@ -545,6 +578,7 @@ export default {
           }
           this.ruleForm = res.data
           this.barcodeData = res.data.serial_num
+          this.getBarcode()
         }
       } catch (error) {
         console.log(error)
@@ -569,6 +603,7 @@ export default {
           }
           this.ruleForm = res.data
           this.barcodeData = res.data.serial_num
+          this.getBarcode()
         }
       } catch (error) {
         console.log(error)
@@ -632,10 +667,6 @@ export default {
     // 组件传参->接收参数 关闭日志
     SetClose(data) {
       this.logDialogVisible = data
-    },
-    // 组件传参->接收参数 关闭条形码
-    BarcodeSetClose(data) {
-      this.BarcodeDialogVisible = data
     },
     // 上传列表删除
     handleRemove(file, fileList) {
